@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Path finding</title>
+</head>
+
+<body>
+  <div class="navbar glass p-0">
+    <div class="navbar-start">
+      <div class="dropdown">
+        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+          </svg>
+        </div>
+        <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+          <li>
+            <select class="select select-accent select-sm max-w-sm align-middle text-center" id="label-small">
+              <option disabled selected>What do you want to insert?</option>
+              <option>Start</option>
+              <option>Obstacle</option>
+              <option>End</option>
+            </select>
+          </li>
+          <li>
+            <select class="select select-accent select-sm max-w-sm align-middle text-center" id="label-small">
+              <option disabled selected>Select Algorithm</option>
+              <option>Start</option>
+              <option>Obstacle</option>
+              <option>End</option>
+            </select>
+          </li>
+        </ul>
+      </div>
+      <a class="btn btn-ghost text-xl">Nehemiah</a>
+    </div>
+    <div class="navbar-center hidden lg:flex">
+      <ul class="menu menu-horizontal px-1 gap-5">
+        <li>
+          <select class="select select-accent select-md max-w-sm align-middle text-center" id="label-large">
+            <option disabled selected>What do you want to insert?</option>
+            <option>Start</option>
+            <option>Obstacle</option>
+            <option>End</option>
+          </select>
+        </li>
+        <li>
+          <select class="select select-accent select-md max-w-sm align-middle text-center" id="algorithms">
+            <option disabled selected>Select Algorithm</option>
+            <option>A* algorithms</option>
+            <option>Dijkstra’s algorithm</option>
+            <option>Maximum Flow algorithm</option>
+            <option>Minimum Spanning Tree</option>
+          </select>
+        </li>
+      </ul>
+    </div>
+    <div class="navbar-end">
+      <div class="mr-5 gap-3 flex flex-col">
+        <label for="cell-size" id="label-cell-size">cell size: 20</label>
+        <input type="range" min="{10}" max="100" value="100" className="range range-lg range-success" id="cell-size" />
+      </div>
+    </div>
+  </div>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

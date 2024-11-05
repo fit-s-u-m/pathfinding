@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	margin: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.navbar {
+	flex-shrink: 0;
+	/* Prevent the navbar from shrinking */
+}
+
+
+#app {
+	flex: 1;
+	margin: 0;
+}
