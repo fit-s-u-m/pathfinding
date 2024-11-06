@@ -54,12 +54,31 @@ const drawing = (p: p5) => {
       grid.setEnd(p.mouseX, p.mouseY);
     }
   };
-  const updateAlgorithm = (selectedAlgorithm: ALGORITHMS) => {
-    algorithm = Algorithms.algorithms(selectedAlgorithm);
+  function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function runAlgorithm() {
     if (grid.start && grid.end) {
-      const path = algorithm.findPath(grid, grid.start, grid.end);
-      console.log(path);
+      const iterator = algorithm.findPath(grid, grid.start, grid.end);
+      let next = iterator.next();
+
+      while (!next.done) {
+        console.log(next.value); // Log the current state
+        history.saveState(next.value); // Save the state
+
+        // Wait for a second before proceeding to the next iteration
+        await delay(1050 - speed);
+
+        // Get the next value from the iterator
+        next = iterator.next();
+      }
+
+      console.log(next.value); // Log the final value after completion
     }
+  }
+  function updateAlgorithm(selectedAlgorithm: ALGORITHMS) {
+    algorithm = Algorithms.algorithms(selectedAlgorithm);
   }
   const clearBoard = () => {
     grid.clearBoard()
