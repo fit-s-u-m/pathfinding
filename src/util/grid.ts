@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { CELL, COLOR, HIGHLIGHTCELL } from "../type";
+import { CELL, COLOR, HIGHLIGHT } from "../type";
 
 export class Grid {
   canvasWidth: number;
@@ -9,8 +9,8 @@ export class Grid {
   obstacles: CELL[] = [];
   numRow: number;
   cellSize: number;
-  highlightCell: HIGHLIGHTCELL[] = [];
-  algorithsmPathCells: CELL[] = [];
+  highlightCell: Map<number, HIGHLIGHT> = new Map();
+  algorithsmPathCells: CELL[] = []
   numCol: number;
   offsetX: number;
   offsetY: number;
@@ -36,8 +36,12 @@ export class Grid {
         } else if (this.isObstacle(row, col)) {
           p.fill("gray");
         }
-        const color = this.getHighlight(row, col);
-        if (color) p.fill(color);
+        const highlight = this.getHighlight(row, col);
+        if (highlight) {
+          p.fill(highlight.color)
+          p.stroke("black")
+          p.text(highlight.text, x + this.cellSize / 2, y + this.cellSize / 2)
+        }
         if (this.isInPath(row, col)) p.fill("black")
         p.square(x, y, this.cellSize);
       }
@@ -47,7 +51,7 @@ export class Grid {
     this.start = null;
     this.end = null
     this.obstacles = []
-    this.highlightCell = []
+    this.highlightCell = new Map()
     this.algorithsmPathCells = []
   }
   isStart(row: number, col: number) {
@@ -68,12 +72,9 @@ export class Grid {
   isInPath(row: number, col: number) {
     return this.algorithsmPathCells.filter((cell) => cell.row == row && cell.col == col).length > 0;
   }
-  getHighlight(row: number, col: number) {
-    return this.highlightCell
-      .filter(({ cell, color }) => {
-        return cell.col == col && cell.row == row;
-      })
-      .map(({ cell, color }) => color)[0];
+  getHighlight(row: number, col: number): HIGHLIGHT | null {
+    const highlight = this.highlightCell.get(this.toNumber({ row, col }));
+    return highlight ? highlight : null;
   }
   changeCoord(x: number, y: number): CELL | null {
     const isInGridX =

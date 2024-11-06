@@ -1,8 +1,8 @@
 import { Grid } from "./grid";
-import { ALGORITHMS, CELL } from "../type";
+import { ALGORITHMS, CELL, State } from "../type";
 import { BreadthFirst } from "../Algorithms/BreadthFirst";
 export interface PathFindingAlgorithm {
-  findPath: (grid: Grid, start: CELL, end: CELL) => CELL[];
+  findPath: (grid: Grid, start: CELL, end: CELL) => Generator<State, CELL[]>;
 }
 export class Algorithms {
   static algorithms(algorithm: ALGORITHMS): PathFindingAlgorithm {

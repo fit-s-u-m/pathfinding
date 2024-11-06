@@ -11,4 +11,10 @@ export type ALGORITHMS =
   | "Bellman-Ford Algorithm"
   | "Floyd-Warshall Algorithm";
 export type COLOR = [number, number, number, number];
-export type HIGHLIGHTCELL = { cell: CELL; color: COLOR };
+export type HIGHLIGHT = { text: string; color: COLOR };
+export type State = {
+  obstacles: CELL[],
+  highlightCell: Map<number, HIGHLIGHT>,
+  algorithsmPathCells: CELL[],
+
+}

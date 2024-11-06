@@ -3,21 +3,25 @@ import { Grid } from "./util/grid";
 import { Ui } from "./handleUi";
 import { ALGORITHMS, SELECT } from "./type";
 import { Algorithms, PathFindingAlgorithm } from "./util/pathFindingAlgorithms";
+import { History } from "./util/history";
 
 const app = document.getElementById("app");
+const history = new History();
+
 if (!app) throw new Error("App not found");
 
 const drawing = (p: p5) => {
   let grid: Grid;
   let ui: Ui;
   let algorithm: PathFindingAlgorithm;
+  let speed: number = 500
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
     grid = new Grid(app.clientWidth, app.clientHeight, 100);
     ui = new Ui(p);
-    ui.updateCellSize((size: string) => grid.setCellSize(parseInt(size)));
+    ui.updateSpeed((value: number) => { speed = value });
     ui.updateFlag()  // label the selected flag
-    ui.updatePlayButton() // contol the play button
+    ui.updatePlayButton(runAlgorithm) // contol the play button
     ui.clearBoardButton(clearBoard)
     ui.updateAlgorithm(updateAlgorithm)
 

@@ -3,8 +3,8 @@ import { ALGORITHMS } from "./type";
 export class Ui {
   selectedFlag: string = "start"
   selectedAlgorithm: ALGORITHMS = "Breadth-First Search";
-  cellSize: p5.Element | null = null;
-  cellSizeLabel: p5.Element | null = null;
+  speed: p5.Element | null = null;
+  speedLabel: p5.Element | null = null;
   algorithm: p5.Element[] | null = null;
   selectables: p5.Element[] | null = null;
   flag: p5.Element[] | null = null;
@@ -16,13 +16,13 @@ export class Ui {
     const clearboard = p.select(".clear-board")
     const flag = p.selectAll(".selected-flag")
     const playButtons = p.selectAll(".play")
-    const cellSize = p.select("#cell-size");
+    const speed = p.select("#speed");
     const algorithm = p.selectAll("#algorithms");
-    const cellSizeLabel = p.select("#label-cell-size");
-    if (!cellSize || !algorithm) return;
+    const speedLabel = p.select("#speed-label");
+    if (!speed || !algorithm) return;
 
-    this.cellSize = cellSize;
-    this.cellSizeLabel = cellSizeLabel;
+    this.speed = speed;
+    this.speedLabel = speedLabel;
     this.algorithm = algorithm;
     this.selectables = selectables
     this.playButtons = playButtons
@@ -48,11 +48,13 @@ export class Ui {
       })
     }
   }
-  updateCellSize(update: Function) {
-    if (!this.cellSize) return;
-    this.cellSize.changed(() => {
-      this.cellSizeLabel?.html("cell size: " + this.cellSize?.value());
-      update(this.cellSize?.value());
+  updateSpeed(update: Function) {
+    if (!this.speed) return;
+    this.speed.changed(() => {
+      if (!this.speed) return;
+      update(this.speed.value());
+      if (!this.speedLabel) return
+      this.speedLabel.html("Speed: " + this.speed.value());
     });
   }
   updateFlag() {
@@ -67,6 +69,18 @@ export class Ui {
       })
     }
   }
+  updatePlayButton(runAlgorithm: Function) {
+    if (!this.playButtons) return
+    this.playButtons.forEach((button) => {
+      button.mouseClicked(() => {
+        this.playPressed = !this.playPressed
+        button.html(this.playPause())
+        if (this.playPressed)
+          runAlgorithm()
+
+      })
+    })
+  }
   getFlag(flag: string) {
     const statFlag = `<svg xmlns="http://www.w3.org/2000/svg"  width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#84f509" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`
     const endFlag = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f5092a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`
@@ -75,15 +89,6 @@ export class Ui {
     if (flag === "end") return endFlag
     if (flag === "obstacle") return obstacleFlag
 
-  }
-  updatePlayButton() {
-    if (!this.playButtons) return
-    this.playButtons.forEach((button) => {
-      button.mouseClicked(() => {
-        this.playPressed = !this.playPressed
-        button.html(this.playPause())
-      })
-    })
   }
   playPause() {
     const pause = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b8e986" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>`
