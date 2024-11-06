@@ -10,6 +10,7 @@ export class Grid {
   numRow: number;
   cellSize: number;
   highlightCell: HIGHLIGHTCELL[] = [];
+  algorithsmPathCells: CELL[] = [];
   numCol: number;
   offsetX: number;
   offsetY: number;
@@ -35,11 +36,19 @@ export class Grid {
         } else if (this.isObstacle(row, col)) {
           p.fill("gray");
         }
-        const color = this.getHighlights(row, col);
+        const color = this.getHighlight(row, col);
         if (color) p.fill(color);
+        if (this.isInPath(row, col)) p.fill("black")
         p.square(x, y, this.cellSize);
       }
     }
+  }
+  clearBoard() {
+    this.start = null;
+    this.end = null
+    this.obstacles = []
+    this.highlightCell = []
+    this.algorithsmPathCells = []
   }
   isStart(row: number, col: number) {
     if (!this.start) return false;
@@ -56,7 +65,10 @@ export class Grid {
       }).length > 0
     );
   }
-  getHighlights(row: number, col: number) {
+  isInPath(row: number, col: number) {
+    return this.algorithsmPathCells.filter((cell) => cell.row == row && cell.col == col).length > 0;
+  }
+  getHighlight(row: number, col: number) {
     return this.highlightCell
       .filter(({ cell, color }) => {
         return cell.col == col && cell.row == row;

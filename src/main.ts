@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { Grid } from "./util/grid";
 import { Ui } from "./handleUi";
-import { SELECT } from "./type";
+import { ALGORITHMS, SELECT } from "./type";
 import { Algorithms, PathFindingAlgorithm } from "./util/pathFindingAlgorithms";
 
 const app = document.getElementById("app");
@@ -16,41 +16,51 @@ const drawing = (p: p5) => {
     grid = new Grid(app.clientWidth, app.clientHeight, 100);
     ui = new Ui(p);
     ui.updateCellSize((size: string) => grid.setCellSize(parseInt(size)));
-    algorithm = Algorithms.algorithms(ui.select?.selected());
+    ui.updateFlag()  // label the selected flag
+    ui.updatePlayButton() // contol the play button
+    ui.clearBoardButton(clearBoard)
+    ui.updateAlgorithm(updateAlgorithm)
+
+    algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
   };
   p.draw = () => {
     p.background(255);
     grid.showGrid(p);
-    ui.algorithm?.changed(() => {
-      console.log("selected");
-      algorithm = Algorithms.algorithms(ui.algorithm.selected());
-      if (grid.start && grid.end) {
-        console.log("trying to find path");
-        const path = algorithm.findPath(grid, grid.start, grid.end);
-        console.log(path);
-      }
-    });
+    if (p.mouseIsPressed) {
+      plantFlag()
+    }
   };
   p.windowResized = () => {
     p.resizeCanvas(app.clientWidth, app.clientHeight);
     grid.resize(app.clientWidth, app.clientHeight);
   };
   p.mouseDragged = () => {
-    const selected = ui.select?.selected() as SELECT;
-    if (selected === "Obstacle") {
+    const selected = ui.selectedFlag;
+    if (selected === "obstacle") {
       grid.addObstacle(p.mouseX, p.mouseY);
     }
   };
-  p.mousePressed = () => {
-    const selected = ui.select?.selected() as SELECT;
-    if (selected === "Obstacle") {
+  const plantFlag = () => {
+    const selected = ui.selectedFlag;
+    if (selected === "obstacle") {
       grid.addObstacle(p.mouseX, p.mouseY);
-    } else if (selected === "Start") {
+    } else if (selected === "start") {
       grid.setStart(p.mouseX, p.mouseY);
-    } else {
+    } else if (selected === "end") {
       grid.setEnd(p.mouseX, p.mouseY);
     }
   };
-};
+  const updateAlgorithm = (selectedAlgorithm: ALGORITHMS) => {
+    algorithm = Algorithms.algorithms(selectedAlgorithm);
+    if (grid.start && grid.end) {
+      const path = algorithm.findPath(grid, grid.start, grid.end);
+      console.log(path);
+    }
+  }
+  const clearBoard = () => {
+    grid.clearBoard()
+  }
+
+}
 
 new p5(drawing, app);

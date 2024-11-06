@@ -2,7 +2,7 @@ import { Grid } from "./grid";
 import { ALGORITHMS, CELL } from "../type";
 import { BreadthFirst } from "../Algorithms/BreadthFirst";
 export interface PathFindingAlgorithm {
-  * findPath: (grid: Grid, start: CELL, end: CELL) => Iterator<CELL[]>;
+  findPath: (grid: Grid, start: CELL, end: CELL) => CELL[];
 }
 export class Algorithms {
   static algorithms(algorithm: ALGORITHMS): PathFindingAlgorithm {
@@ -10,8 +10,8 @@ export class Algorithms {
       case "A* algorithms":
       case "Dijkstra\u2019s algorithm":
       case "Maximum Flow algorithm":
-      case "Minimum Spanning Tree ":
-      case "Breadth-First Search ":
+      case "Minimum Spanning Tree":
+      case "Breadth-First Search":
         return new BreadthFirst();
       case "Depth-First Search":
       case "Greedy Best-First Search":

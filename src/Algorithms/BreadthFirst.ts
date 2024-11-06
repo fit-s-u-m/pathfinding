@@ -6,7 +6,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
   visited: Set<number> = new Set();
   queue: Queue<CELL> = new Queue();
   previous: Map<number, CELL> = new Map();
-  *findPath(grid: Grid, start: CELL, end: CELL): Iterator<CELL[]> {
+  findPath(grid: Grid, start: CELL, end: CELL): CELL[] {
     this.visited.add(grid.toNumber(start));
     this.queue.enqueue(start);
     let found = false;
@@ -29,7 +29,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
         }
       });
     }
-    yield* this.reconstructPath(grid, start, end);
+    return this.reconstructPath(grid, start, end);
   }
   calculateHighlightColor(grid: Grid, cell: CELL, end: CELL, initalColor: [number, number, number] = [0, 255, 255]): [number, number, number, number] {
     if (grid.toNumber(cell) === grid.toNumber(end)) return [255, 0, 0, 255];
@@ -40,7 +40,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
     return color
 
   }
-  *reconstructPath(grid: Grid, start: CELL, end: CELL) {
+  reconstructPath(grid: Grid, start: CELL, end: CELL) {
     let prevCell = this.previous.get(grid.toNumber(end));
     let path: CELL[] = [];
     if (!prevCell) return [];
@@ -48,7 +48,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
     while (grid.toNumber(prevCell) !== grid.toNumber(start)) {
       if (!prevCell) break;
       console.log("reconstructing path", prevCell);
-      this.calculateHighlightColor(grid, prevCell, end, [255, 0, 0]);
+      grid.algorithsmPathCells.push(prevCell);
       path.push(prevCell);
       prevCell = this.previous.get(grid.toNumber(prevCell));
     }

@@ -18,21 +18,39 @@
           </svg>
         </div>
         <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+          <li class="selected-flag"></li>
+          <li class="selectables">
+            <button data-value="start"
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+              <span>Start</span>
+            </button>
+            <button data-value="obstacle"
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+              <span>Obstacle</span>
+            </button>
+            <button data-value="end"
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+              <span>End</span>
+            </button>
+          </li>
           <li>
-            <select class="select select-accent select-sm max-w-sm align-middle text-center" id="label-small">
-              <option disabled selected>What do you want to insert?</option>
-              <option>Start</option>
-              <option>Obstacle</option>
-              <option>End</option>
+            <select class="select select-accent select-md max-w-sm align-middle text-center" id="algorithms">
+              <option disabled selected>Select Algorithm</option>
+              <option>Breadth-First Search</option>
+              <option>Dijkstra’s algorithm</option>
+              <option>A* algorithms</option>
+              <option>Maximum Flow algorithm</option>
+              <option>Minimum Spanning Tree</option>
             </select>
           </li>
           <li>
-            <select class="select select-accent select-sm max-w-sm align-middle text-center" id="label-small">
-              <option disabled selected>Select Algorithm</option>
-              <option>Start</option>
-              <option>Obstacle</option>
-              <option>End</option>
-            </select>
+            <button class="play">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="#b8e986" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+              </svg>
+            </button>
           </li>
         </ul>
       </div>
@@ -40,29 +58,60 @@
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1 gap-5">
-        <li>
-          <select class="select select-accent select-md max-w-sm align-middle text-center" id="label-large">
-            <option disabled selected>What do you want to insert?</option>
-            <option>Start</option>
-            <option>Obstacle</option>
-            <option>End</option>
-          </select>
+        <li class="selected-flag"></li>
+        <li class="flex flex-row gap-5">
+          <button data-value="start"
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+            <span>Start</span>
+          </button>
+          <button data-value="obstacle"
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+            <span>Obstacle</span>
+          </button>
+          <button data-value="end"
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+            <span>End</span>
+          </button>
         </li>
         <li>
+
           <select class="select select-accent select-md max-w-sm align-middle text-center" id="algorithms">
             <option disabled selected>Select Algorithm</option>
-            <option>A* algorithms</option>
+            <option>Breadth-First Search</option>
             <option>Dijkstra’s algorithm</option>
+            <option>A* algorithms</option>
             <option>Maximum Flow algorithm</option>
             <option>Minimum Spanning Tree</option>
           </select>
         </li>
+        <li>
+          <button class="play">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="#b8e986" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+          </button>
+        </li>
       </ul>
     </div>
     <div class="navbar-end">
-      <div class="mr-5 gap-3 flex flex-col">
-        <label for="cell-size" id="label-cell-size">cell size: 20</label>
-        <input type="range" min="{10}" max="100" value="100" className="range range-lg range-success" id="cell-size" />
+      <div class="flex flex-row gap-10">
+        <div class="clear-board">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+          clear
+        </div>
+        <div class="mr-5 gap-3 flex flex-col">
+          <label for="cell-size" id="label-cell-size">cell size: 20</label>
+          <input type="range" min="{10}" max="100" value="100" className="range range-lg range-success"
+            id="cell-size" />
+        </div>
       </div>
     </div>
   </div>
