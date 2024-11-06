@@ -17,7 +17,7 @@ const drawing = (p: p5) => {
   let speed: number = 500
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
-    grid = new Grid(app.clientWidth, app.clientHeight, 100);
+    grid = new Grid(app.clientWidth, app.clientHeight, 20, 50);
     ui = new Ui(p);
     ui.updateSpeed((value: number) => { speed = value });
     ui.updateFlag()  // label the selected flag

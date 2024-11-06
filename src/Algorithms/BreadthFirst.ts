@@ -49,6 +49,13 @@ export class BreadthFirst implements PathFindingAlgorithm {
 
     // At the end of the pathfinding, reconstruct the path
     yield* this.reconstructPath(grid, start, end);
+    this.reset()
+
+  }
+  reset() {
+    this.visited = new Set();
+    this.queue = new Queue();
+    this.previous = new Map();
 
   }
 
@@ -60,7 +67,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
     const alpha = 1 - distanceToEnd / maxDistance;
     const color: [number, number, number, number] = [...initialColor, alpha * 255];
 
-    return { color, text: distanceToEnd.toFixed(2).toString() };
+    return { color, text: distanceToEnd.toFixed(1).toString() };
   }
 
   *reconstructPath(grid: Grid, start: CELL, end: CELL) {

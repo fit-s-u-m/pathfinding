@@ -7,21 +7,21 @@ export class Grid {
   start: CELL | null = null;
   end: CELL | null = null;
   obstacles: CELL[] = [];
-  numRow: number;
+  numRow: number = 20;
+  numCol: number = 20;
   cellSize: number;
   highlightCell: Map<number, HIGHLIGHT> = new Map();
   algorithsmPathCells: CELL[] = []
-  numCol: number;
   offsetX: number;
   offsetY: number;
-  constructor(canvasWidth: number, canvasHeight: number, cellSize: number) {
+  constructor(canvasWidth: number, canvasHeight: number, numRow: number, numCol: number) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.cellSize = cellSize;
-    this.numRow = Math.floor(this.canvasHeight / cellSize);
-    this.numCol = Math.floor(this.canvasWidth / cellSize);
-    this.offsetX = (this.canvasWidth - cellSize * this.numCol) / 2;
-    this.offsetY = (this.canvasHeight - cellSize * this.numRow) / 2;
+    this.numRow = numRow
+    this.numCol = numCol
+    this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
+    this.offsetX = (this.canvasWidth - this.cellSize * this.numCol) / 2;
+    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
   }
   showGrid(p: p5) {
     for (let row = 0; row < this.numRow; row++) {
@@ -40,6 +40,7 @@ export class Grid {
         if (highlight) {
           p.fill(highlight.color)
           p.stroke("black")
+          p.textAlign(p.CENTER, p.CENTER);
           p.text(highlight.text, x + this.cellSize / 2, y + this.cellSize / 2)
         }
         if (this.isInPath(row, col)) p.fill("black")
@@ -141,13 +142,8 @@ export class Grid {
     const state = this.changeCoord(x, y);
     if (state) this.end = state;
   }
-  setCellSize(size: number) {
-    this.cellSize = size;
-    this.update();
-  }
   update() {
-    this.numRow = Math.floor(this.canvasHeight / this.cellSize);
-    this.numCol = Math.floor(this.canvasWidth / this.cellSize);
+    this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol) / 2;
     this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
   }
