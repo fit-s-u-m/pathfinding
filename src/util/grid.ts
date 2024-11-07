@@ -98,15 +98,10 @@ export class Grid {
       if (!this.isObstacle(topNeighborCell.row, topNeighborCell.col))
         neighbors.push(topNeighborCell);
     }
-    if (cell.row < this.numRow - 1) {
-      const downNeighborCell = { row: cell.row + 1, col: cell.col };
-      if (!this.isObstacle(downNeighborCell.row, downNeighborCell.col))
-        neighbors.push(downNeighborCell);
-    }
-    if (cell.col > 0) {
-      const leftNeighborCell = { row: cell.row, col: cell.col - 1 };
-      if (!this.isObstacle(leftNeighborCell.row, leftNeighborCell.col))
-        neighbors.push(leftNeighborCell);
+    if (cell.col < this.numCol - 1 && cell.row > 0) {
+      const topRightNeighborCell = { row: cell.row - 1, col: cell.col + 1 };
+      if (!this.isObstacle(topRightNeighborCell.row, topRightNeighborCell.col))
+        neighbors.push(topRightNeighborCell);
     }
     if (cell.col < this.numCol - 1) {
       const rightNeighborCell = { row: cell.row, col: cell.col + 1 };
@@ -118,20 +113,25 @@ export class Grid {
       if (!this.isObstacle(downRightNeighborCell.row, downRightNeighborCell.col))
         neighbors.push(downRightNeighborCell);
     }
-    if (cell.col < this.numCol - 1 && cell.row > 0) {
-      const topRightNeighborCell = { row: cell.row - 1, col: cell.col + 1 };
-      if (!this.isObstacle(topRightNeighborCell.row, topRightNeighborCell.col))
-        neighbors.push(topRightNeighborCell);
+    if (cell.row < this.numRow - 1) {
+      const downNeighborCell = { row: cell.row + 1, col: cell.col };
+      if (!this.isObstacle(downNeighborCell.row, downNeighborCell.col))
+        neighbors.push(downNeighborCell);
+    }
+    if (cell.col > 0 && cell.row < this.numRow - 1) {
+      const downLeftNeighborCell = { row: cell.row + 1, col: cell.col - 1 };
+      if (!this.isObstacle(downLeftNeighborCell.row, downLeftNeighborCell.col))
+        neighbors.push(downLeftNeighborCell);
+    }
+    if (cell.col > 0) {
+      const leftNeighborCell = { row: cell.row, col: cell.col - 1 };
+      if (!this.isObstacle(leftNeighborCell.row, leftNeighborCell.col))
+        neighbors.push(leftNeighborCell);
     }
     if (cell.col > 0 && cell.row > 0) {
       const topLeftNeighborCell = { row: cell.row - 1, col: cell.col - 1 };
       if (!this.isObstacle(topLeftNeighborCell.row, topLeftNeighborCell.col))
         neighbors.push(topLeftNeighborCell);
-    }
-    if (cell.col > 0 && cell.row < this.numRow - 1) {
-      const downLeftNeighborCell = { row: cell.row - 1, col: cell.col - 1 };
-      if (!this.isObstacle(downLeftNeighborCell.row, downLeftNeighborCell.col))
-        neighbors.push(downLeftNeighborCell);
     }
     return neighbors;
   }
