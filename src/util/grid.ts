@@ -1,175 +1,263 @@
 import p5 from "p5";
-import { CELL, COLOR, HIGHLIGHT } from "../type";
+import { CellType, COLOR, HIGHLIGHT } from "../type";
+import { Graph } from "../dataStructures/Graph";
+import { Cell } from "./cell";
+import { colors } from "./colors";
 
-export class Grid {
+export class Grid implements Graph {
   canvasWidth: number;
   canvasHeight: number;
-  start: CELL | null = null;
-  end: CELL | null = null;
-  obstacles: CELL[] = [];
+
+  start: GridCell | null = null;
+  end: GridCell | null = null;
+
   numRow: number = 20;
   numCol: number = 20;
   cellSize: number;
+
   highlightCell: Map<number, HIGHLIGHT> = new Map();
-  algorithsmPathCells: CELL[] = []
+  currentScan: GridCell | null = null
+  algorithsmPathCells: GridCell[] = []
+
   offsetX: number;
   offsetY: number;
+
+  cells: Map<number, GridCell> = new Map()
   constructor(canvasWidth: number, canvasHeight: number, numRow: number, numCol: number) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
+
     this.numRow = numRow
     this.numCol = numCol
+
     this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol) / 2;
     this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
+
+    this.makeGrid()
   }
-  showGrid(p: p5) {
+  makeGrid() {
     for (let row = 0; row < this.numRow; row++) {
       for (let col = 0; col < this.numCol; col++) {
         const x = col * this.cellSize + this.offsetX;
         const y = row * this.cellSize + this.offsetY;
-        p.fill("white");
-        if (this.isStart(row, col)) {
-          p.fill("green");
-        } else if (this.isEnd(row, col)) {
-          p.fill("red");
-        } else if (this.isObstacle(row, col)) {
-          p.fill("gray");
-        }
-        const highlight = this.getHighlight(row, col);
-        if (highlight) {
-          p.fill(highlight.color)
-          p.stroke("black")
-          p.textAlign(p.CENTER, p.CENTER);
-          p.text(highlight.text, x + this.cellSize / 2, y + this.cellSize / 2)
-        }
-        if (this.isInPath(row, col)) p.fill("black")
-        p.square(x, y, this.cellSize, this.cellSize / 5);
+        const index = row * this.numCol + col
+        const cell = new GridCell(x, y, this.cellSize, row, col)
+        this.cells.set(index, cell)
+      }
+    }
+    for (let row = 0; row < this.numRow; row++) {
+      for (let col = 0; col < this.numCol; col++) {
+        this.makeNeighbors(this.cells.get(row * this.numCol + col) as GridCell)
       }
     }
   }
-  clearBoard() {
-    this.start = null;
-    this.end = null
-    this.obstacles = []
-    this.highlightCell = new Map()
-    this.algorithsmPathCells = []
-  }
-  isStart(row: number, col: number) {
-    if (!this.start) return false;
-    return this.start.row == row && this.start.col == col;
-  }
-  isEnd(row: number, col: number) {
-    if (!this.end) return false;
-    return this.end.row == row && this.end.col == col;
-  }
-  isObstacle(row: number, col: number) {
-    return (
-      this.obstacles.filter((cell) => {
-        return cell.col == col && cell.row == row;
-      }).length > 0
-    );
-  }
-  isInPath(row: number, col: number) {
-    return this.algorithsmPathCells.filter((cell) => cell.row == row && cell.col == col).length > 0;
-  }
-  getHighlight(row: number, col: number): HIGHLIGHT | null {
-    const highlight = this.highlightCell.get(this.toNumber({ row, col }));
-    return highlight ? highlight : null;
-  }
-  changeCoord(x: number, y: number): CELL | null {
-    const isInGridX =
-      x < this.numCol * this.cellSize + this.offsetX && x > this.offsetX;
-    const isInGridY =
-      y < this.numRow * this.cellSize + this.offsetY && y > this.offsetY;
-    if (isInGridX && isInGridY) {
-      const state = {
-        col: Math.floor((x - this.offsetX) / this.cellSize),
-        row: Math.floor((y - this.offsetY) / this.cellSize),
-      };
-      return state;
-    }
-    return null;
-  }
-  getNeighbors(cell: CELL) {
-    const neighbors: CELL[] = [];
+  makeNeighbors(cell: GridCell) {
+    const neighbors: GridCell[] = [];
     if (cell.row > 0) {
-      const topNeighborCell = { row: cell.row - 1, col: cell.col };
-      if (!this.isObstacle(topNeighborCell.row, topNeighborCell.col))
+      const topNeighborCellIndex = (cell.row - 1) * this.numCol + cell.col
+      const topNeighborCell = this.cells.get(topNeighborCellIndex) as GridCell
+      if (topNeighborCell && topNeighborCell.type !== "obstacle") {
         neighbors.push(topNeighborCell);
+        cell.neighbors.push(topNeighborCell)
+      }
     }
     if (cell.col < this.numCol - 1 && cell.row > 0) {
-      const topRightNeighborCell = { row: cell.row - 1, col: cell.col + 1 };
-      if (!this.isObstacle(topRightNeighborCell.row, topRightNeighborCell.col))
+      const topRightNeighborCellIndex = (cell.row - 1) * this.numCol + (cell.col + 1)
+      const topRightNeighborCell = this.cells.get(topRightNeighborCellIndex)
+      if (topRightNeighborCell && topRightNeighborCell.type !== "obstacle") {
         neighbors.push(topRightNeighborCell);
+        cell.neighbors.push(topRightNeighborCell)
+      }
     }
     if (cell.col < this.numCol - 1) {
-      const rightNeighborCell = { row: cell.row, col: cell.col + 1 };
-      if (!this.isObstacle(rightNeighborCell.row, rightNeighborCell.col))
+      const rightNeighborCellIndex = (cell.row) * this.numCol + (cell.col + 1)
+      const rightNeighborCell = this.cells.get(rightNeighborCellIndex)
+      if (rightNeighborCell && rightNeighborCell.type !== "obstacle") {
         neighbors.push(rightNeighborCell);
+        cell.neighbors.push(rightNeighborCell)
+      }
     }
     if (cell.col < this.numCol - 1 && cell.row < this.numRow - 1) {
-      const downRightNeighborCell = { row: cell.row + 1, col: cell.col + 1 };
-      if (!this.isObstacle(downRightNeighborCell.row, downRightNeighborCell.col))
+      const downRightNeighborCellIndex = (cell.row + 1) * this.numCol + (cell.col + 1)
+      const downRightNeighborCell = this.cells.get(downRightNeighborCellIndex)
+      if (downRightNeighborCell && downRightNeighborCell.type !== "obstacle") {
         neighbors.push(downRightNeighborCell);
+        cell.neighbors.push(downRightNeighborCell)
+      }
     }
     if (cell.row < this.numRow - 1) {
-      const downNeighborCell = { row: cell.row + 1, col: cell.col };
-      if (!this.isObstacle(downNeighborCell.row, downNeighborCell.col))
+      const downNeighborCellIndex = (cell.row + 1) * this.numCol + cell.col
+      const downNeighborCell = this.cells.get(downNeighborCellIndex)
+      if (downNeighborCell && downNeighborCell.type !== "obstacle") {
         neighbors.push(downNeighborCell);
+        cell.neighbors.push(downNeighborCell)
+      }
     }
     if (cell.col > 0 && cell.row < this.numRow - 1) {
-      const downLeftNeighborCell = { row: cell.row + 1, col: cell.col - 1 };
-      if (!this.isObstacle(downLeftNeighborCell.row, downLeftNeighborCell.col))
+      const downLeftNeighborCellIndex = (cell.row + 1) * this.numCol + (cell.col - 1)
+      const downLeftNeighborCell = this.cells.get(downLeftNeighborCellIndex)
+      if (downLeftNeighborCell && downLeftNeighborCell.type !== "obstacle") {
         neighbors.push(downLeftNeighborCell);
+        cell.neighbors.push(downLeftNeighborCell)
+      }
     }
     if (cell.col > 0) {
-      const leftNeighborCell = { row: cell.row, col: cell.col - 1 };
-      if (!this.isObstacle(leftNeighborCell.row, leftNeighborCell.col))
+      const leftNeighborCellIndex = (cell.row) * this.numCol + (cell.col - 1)
+      const leftNeighborCell = this.cells.get(leftNeighborCellIndex)
+      if (leftNeighborCell && leftNeighborCell.type !== "obstacle") {
         neighbors.push(leftNeighborCell);
+        cell.neighbors.push(leftNeighborCell)
+      }
     }
     if (cell.col > 0 && cell.row > 0) {
-      const topLeftNeighborCell = { row: cell.row - 1, col: cell.col - 1 };
-      if (!this.isObstacle(topLeftNeighborCell.row, topLeftNeighborCell.col))
+      const topLeftNeighborCellIndex = (cell.row - 1) * this.numCol + (cell.col - 1)
+      const topLeftNeighborCell = this.cells.get(topLeftNeighborCellIndex)
+      if (topLeftNeighborCell && topLeftNeighborCell.type !== "obstacle") {
         neighbors.push(topLeftNeighborCell);
+        cell.neighbors.push(topLeftNeighborCell)
+      }
     }
     return neighbors;
   }
-  toNumber(cell: CELL) {
+  show(p: p5) {
+    for (let cell of this.cells.values()) {
+      cell.show(p)
+    }
+  }
+
+  getWeight(cell1: GridCell, cell2: GridCell): number {
+    return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
+  }
+  getObstacles(): Cell[] {
+    return Array.from(this.cells.values()).filter(cell => cell.type === "obstacle")
+  }
+
+  toNumber(cell: GridCell) {
     return this.numCol * cell.row + cell.col;
   }
-  getCell(index: number): CELL {
-    return {
-      row: index / this.numCol,
-      col: index % this.numCol,
-    };
+  toCell(index: number): GridCell | undefined {
+    return this.cells.get(index)
   }
-  fillCell(row: number, col: number, color: COLOR) {
-    const highlightCell = { row, col };
-    const highlightColor = color;
-    this.highlightCell.push({ cell: highlightCell, color: highlightColor });
+  getCell(x: number, y: number) {
+    const col = Math.floor((x - this.offsetX) / this.cellSize);
+    const row = Math.floor((y - this.offsetY) / this.cellSize);
+    if (row >= 0 && row < this.numRow && col >= 0 && col < this.numCol) {
+      const index = row * this.numCol + col
+      return this.cells.get(index)
+    }
   }
 
   addObstacle(x: number, y: number) {
-    const state = this.changeCoord(x, y);
-    if (state) this.obstacles.push(state);
+    const cell = this.getCell(x, y)
+    if (cell)
+      cell.beObstacle()
+  }
+  addPathCell(cell: Cell): void {
+    this.algorithsmPathCells.push(cell as GridCell)
+    cell.beInPath()
   }
   setStart(x: number, y: number) {
-    const state = this.changeCoord(x, y);
-    if (state) this.start = state;
+    const cell = this.getCell(x, y)
+    if (cell) {
+      if (this.start) {
+        this.start.beNormal()
+      }
+      cell.beStart()
+      this.start = cell
+    }
   }
   setEnd(x: number, y: number) {
-    const state = this.changeCoord(x, y);
-    if (state) this.end = state;
+    const cell = this.getCell(x, y)
+    if (cell) {
+      if (this.end) {
+        this.end.beNormal()
+      }
+      cell.beEnd()
+      this.end = cell
+    }
   }
+
+  onMouseMove(x: number, y: number, p: p5) {
+    const cell = this.getCell(x, y)
+    if (cell)
+      cell.showText(cell.name, p)
+  }
+
   update() {
     this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol) / 2;
     this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
+
+    for (let cell of this.cells.values()) {
+      cell.cellSize = this.cellSize
+      cell.location.x = cell.col * this.cellSize + this.offsetX
+      cell.location.y = cell.row * this.cellSize + this.offsetY
+    }
   }
   resize(width: number, height: number) {
     this.canvasWidth = width;
     this.canvasHeight = height;
     this.update();
   }
+}
+
+class GridCell implements Cell {
+  location: { x: number, y: number }
+  neighbors: GridCell[] = []
+  name: string = ""
+  type: CellType = "normal"
+  color: COLOR = [255, 255, 255, 255]
+  cellSize: number
+  row: number
+  col: number
+
+  constructor(x: number, y: number, cellSize: number, row: number, col: number) {
+    this.location = { x, y }
+    this.cellSize = cellSize
+    this.row = row
+    this.col = col
+  }
+  show(p: p5) {
+    p.fill(this.color)
+    p.square(this.location.x, this.location.y, this.cellSize)
+
+  }
+  beNormal(): void {
+    this.type = "normal"
+    this.color = colors.background as COLOR
+  }
+
+  beStart(): void {
+    this.type = "start"
+    this.color = colors.start as COLOR
+  }
+  beEnd(): void {
+    this.type = "end"
+    this.color = colors.end as COLOR
+  }
+  beObstacle(): void {
+    this.type = "obstacle"
+    this.color = colors.obstacle as COLOR
+  }
+  beInPath(): void {
+    this.type = "path"
+    this.color = colors.path as COLOR
+  }
+  isInCell(x: number, y: number) {
+    const xBound = x - this.location.x > 0 && x - this.location.x < this.cellSize
+    const yBound = y - this.location.y > 0 && y - this.location.y < this.cellSize
+    return xBound && yBound
+  }
+
+  showText(text: string, p: p5) {
+    this.name = text
+    p.fill("black")
+    p.textAlign(p.CENTER)
+    p.text(this.name, this.location.x, this.location.y)
+  }
+  highlight(color: COLOR) {
+    this.color = color
+  }
+
 }

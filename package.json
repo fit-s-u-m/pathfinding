@@ -17,7 +17,9 @@
   },
   "type": "module",
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.9",
     "@types/p5": "^1.7.6",
+    "alpinejs": "^3.14.3",
     "p5": "^1.11.1"
   }
 }

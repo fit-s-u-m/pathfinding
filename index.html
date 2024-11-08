@@ -9,85 +9,138 @@
 </head>
 
 <body>
-  <div class="navbar glass p-0">
-    <div class="navbar-start">
-      <div class="dropdown">
-        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+  <div class="navbar glass p-0" x-data="{selected:'start'}">
+    <div class=" navbar-start">
+      <div class="dropdown" x-data="{isOpened:false}">
+        <div tabindex="0" role="button" @click="isOpened = !isOpened" class="btn btn-ghost lg:hidden">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
         </div>
-        <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-          <li class="selected-flag"></li>
-          <li class="selectables">
-            <button data-value="start"
-              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+        <ul tabindex="0" x-show="isOpened" @click.outside="isOpened=false"
+          class="menu menu-sm dropdown-content bg-background-color rounded-box z-[1] mt-3 h-[80vh] w-[60vh] p-2 shadow">
+          <li class="flex flex-row gap-5 items-center">
+            <button data-value=" start" @click="selected='start'"
+              :class="selected =='start'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color'  "
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap hover:bg-primary-color hover:text-secondary-color focus:bg-primary-color focus:text-secondary-color ">
               <span>Start</span>
             </button>
-            <button data-value="obstacle"
-              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+            <button data-value="obstacle" @click="selected='obstacle'"
+              :class="selected == 'obstacle'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
               <span>Obstacle</span>
             </button>
-            <button data-value="end"
-              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+            <button data-value="end" @click="selected='end'"
+              :class="selected=='end'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
+              class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
               <span>End</span>
             </button>
           </li>
+
           <li>
-            <select class="select select-accent select-md max-w-sm align-middle text-center" id="algorithms">
-              <option disabled selected>Select Algorithm</option>
-              <option>Breadth-First Search</option>
-              <option>Dijkstra’s algorithm</option>
-              <option>A* algorithms</option>
-              <option>Maximum Flow algorithm</option>
-              <option>Minimum Spanning Tree</option>
-            </select>
+            <div>
+              <label for="algorithms" class="block text-sm font-medium text-gray-900">Algorithms</label>
+              <select name="HeadlineAct" id="algorithms"
+                class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm">
+                <option disabled>Select Algorithm</option>
+                <option> Breadth-First Search</option>
+                <option>Dijkstra’s algorithm</option>
+                <option>A* algorithms</option>
+                <option>Maximum Flow algorithm</option>
+                <option>Minimum Spanning Tree</option>
+              </select>
+            </div>
+
           </li>
           <li>
-            <button class="play">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="#b8e986" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="10 8 16 12 10 16 10 8"></polygon>
-              </svg>
+            <button
+              class="play bg-secondary-color text-primary-color focus:bg-primary-color focus:text-secondary-color hover:bg-primary-color hover:text-secondary-color  ">
+              run
             </button>
           </li>
         </ul>
       </div>
-      <a class="btn btn-ghost text-xl">Nehemiah</a>
+      <a class="btn btn-ghost text-xl text-primary-color">Nehemiah</a>
     </div>
     <div class="navbar-center hidden lg:flex">
-      <ul class="menu menu-horizontal px-1 gap-5">
-        <li class="selected-flag"></li>
-        <li class="flex flex-row gap-5">
-          <button data-value="start"
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+      <ul class="menu menu-horizontal px-1 gap-5 disabled">
+        <li class="flex flex-col" x-data="{numRow:30}">
+          <label for="num-row" class="text-primary-color m-0">Num Row</label>
+
+          <div class="flex items-center rounded border border-primary-color-light m-0 h-8">
+            <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
+              @click="Math.max(1,numRow--)">
+              &minus;
+            </button>
+
+            <input type="number" id="num-row" value="1" x-model="numRow"
+              class="h-8 w-16 bg-primary-color-light border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
+
+            <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
+              @click="numRow++">
+              &plus;
+            </button>
+          </div>
+        </li>
+        <li>
+          <div x-data="{ numCol: 30 }" class="flex flex-col ">
+            <label for="num-col" class="text-primary-color">Num Column</label>
+
+            <div class="flex items-center rounded border border-primary-color-light h-8">
+              <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
+                @click.stop="numCol = Math.max(1, numCol - 1)">
+
+                &minus;
+              </button>
+
+              <input type="number" id="num-col" x-model="numCol"
+                class="h-8 w-16 bg-primary-color-light border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
+
+              <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
+                @click.stop="numCol++">
+                &plus;
+              </button>
+            </div>
+          </div>
+
+        </li>
+
+
+        <li class="flex flex-row gap-5 items-center">
+          <button data-value="start" @click="selected='start'"
+            :class="selected =='start'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color'  "
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap hover:bg-primary-color hover:text-secondary-color focus:bg-primary-color focus:text-secondary-color ">
             <span>Start</span>
           </button>
-          <button data-value="obstacle"
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+          <button data-value="obstacle" @click="selected='obstacle'"
+            :class="selected == 'obstacle'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
             <span>Obstacle</span>
           </button>
-          <button data-value="end"
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 focus:bg-emerald-700 focus:text-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:shadow-none">
+          <button data-value="end" @click="selected='end'"
+            :class="selected=='end'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
             <span>End</span>
           </button>
         </li>
-        <li>
-
-          <select class="select select-accent select-md max-w-sm align-middle text-center" id="algorithms">
-            <option disabled selected>Select Algorithm</option>
-            <option>Breadth-First Search</option>
-          </select>
-        </li>
-        <li>
-          <button class="play">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="#b8e986" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="10 8 16 12 10 16 10 8"></polygon>
-            </svg>
+        <li class="flex flex-row items-center ">
+          <button
+            class="play bg-secondary-color text-primary-color focus:bg-primary-color focus:text-secondary-color hover:bg-primary-color hover:text-secondary-color  ">
+            run
           </button>
+        </li>
+        <li class="justify-center">
+
+          <select name="Algorithm" id="algorithms"
+            class=" select-md select-ghost w-full rounded-lg  bg-primary-color-light text-primary-color">
+            <option disabled>Select Algorithm</option>
+            <option> Breadth-First Search</option>
+            <option>Dijkstra’s algorithm</option>
+            <option>A* algorithms</option>
+            <option>Maximum Flow algorithm</option>
+            <option>Minimum Spanning Tree</option>
+          </select>
+
         </li>
       </ul>
     </div>
@@ -95,7 +148,7 @@
       <div class="flex flex-row gap-10">
         <div class="clear-board">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            class="stroke-primary-color" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             <line x1="10" y1="11" x2="10" y2="17"></line>
@@ -103,9 +156,10 @@
           </svg>
           clear
         </div>
+
         <div class="mr-5 gap-3 flex flex-col">
-          <label for="speed" id="speed-label">Speed: 500</label>
-          <input type="range" min="50" max="1050" value="500" class="range range-sm range-accent" id="speed" />
+          <label for="speed" class="text-primary-color" id="speed-label">Speed: 10</label>
+          <input type="range" min="0" max="50" value="10" class="range range-sm" id="speed" />
         </div>
       </div>
     </div>

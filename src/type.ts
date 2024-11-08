@@ -1,4 +1,7 @@
+import { Cell } from "./util/cell";
+
 export type CELL = { row: number; col: number };
+export type CellType = "start" | "end" | "obstacle" | "normal" | "path";
 export type SELECT = "start" | "end" | "obstacle";
 export type ALGORITHMS =
   | "A* algorithms"
@@ -13,8 +16,25 @@ export type ALGORITHMS =
 export type COLOR = [number, number, number, number];
 export type HIGHLIGHT = { text: string; color: COLOR };
 export type State = {
-  obstacles: CELL[],
+  obstacles: Cell[],
   highlightCell: Map<number, HIGHLIGHT>,
-  algorithsmPathCells: CELL[],
+  algorithsmPathCells: Cell[],
+}
+export type SUBJSON = {
+  "type": string,
+  "property": { "name": string },
+  "geometry": {
+    "coordinates": [number, number]
+    "type": string
+  }
+}
+export type GEOJSON = {
+  "type": string
+  "features": SUBJSON[]
 
+}
+
+export type CityData = {
+  name: string,
+  location: [number, number]
 }

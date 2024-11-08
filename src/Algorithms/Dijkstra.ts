@@ -4,10 +4,10 @@ import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { Queue } from "../dataStructures/Queue";
 
 export class Dijkstra implements PathFindingAlgorithm {
-  visited: Set<number> = new Set();
-  queue: Queue<CELL> = new Queue();
-  shortestDistance: Map<number, number> = new Map(); // map(index,dist)
-  previous: Map<number, CELL> = new Map();
+  private visited: Set<number> = new Set();
+  private shortestDistance: Map<number, number> = new Map(); // map(index,dist)
+  private queue: Queue<CELL> = new Queue();
+  private previous: Map<number, CELL> = new Map();
 
   // Correctly defining the generator function
   *findPath(grid: Grid, start: CELL, end: CELL): Generator<State> {
@@ -30,27 +30,30 @@ export class Dijkstra implements PathFindingAlgorithm {
       if (!current) break;
 
       const neighbors = grid.getNeighbors(current);
+      this.visited.add(grid.toNumber(current));
       for (const cell of neighbors) {
         if (this.visited.has(grid.toNumber(cell))) continue;
 
-        this.visited.add(grid.toNumber(cell));
-        this.queue.enqueue(cell);
+
         const currentWeight = this.calculateWeight(current, cell)
         const runningWeight = currentWeight + this.shortestDistance.get(grid.toNumber(current))
-        console.log("running weight", runningWeight)
         const prevWeight = this.shortestDistance.get(grid.toNumber(cell))
+
+        console.log("running weight", runningWeight, "prev Weight", prevWeight, cell)
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
           this.previous.set(grid.toNumber(cell), current);
           this.shortestDistance.set(grid.toNumber(cell), runningWeight)
           const highlight = this.calculateHighlightColor(grid, cell, end, [0, 0, 196]);
           grid.highlightCell.set(grid.toNumber(cell), highlight);
+          this.queue.enqueue(cell);
           console.log("Found shortest", runningWeight, "at ", cell);
         }
         else {
           const highlight = this.calculateHighlightColor(grid, cell, end, [198, 0, 0]);
           grid.highlightCell.set(grid.toNumber(cell), highlight);
-          console.log("shortest", prevWeight, "at ");
+          console.log("shortest", prevWeight, "at ", cell);
         }
+        grid.currentScan = cell
 
         // Constructing the state to yield
         const state: State = {

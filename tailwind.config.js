@@ -5,8 +5,21 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "primary-color": "#3A606E",
+        "primary-color-light": "#573D1C",
+        "secondary-color": "#A2999E",
+        "accent-color": "#ff6380",
+        "background-color": "#C6C7C4",
+        "bold-color": "#000",
+      },
+
+    },
   },
-  plugins: [require('daisyui'),],
+  plugins: [
+    require('daisyui'),
+    require('@tailwindcss/forms')
+  ],
 }
 
