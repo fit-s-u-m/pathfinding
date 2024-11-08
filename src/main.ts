@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Grid } from "./util/grid";
+import { Grid } from "../src/visualization/grid";
 import { Ui } from "./handleUi";
 import { ALGORITHMS, State } from "./type";
 import { Algorithms, PathFindingAlgorithm } from "./util/pathFindingAlgorithms";
@@ -29,14 +29,23 @@ const drawing = (p: p5) => {
   }
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
-    // grid = new Grid(app.clientWidth, app.clientHeight, 20, 50);
-    graph = new Country(geoJson, app.clientWidth, app.clientHeight)
     ui = new Ui(p);
     ui.updateSpeed(updateSpeed);
     ui.updateFlag()  // label the selected flag
     ui.updatePlayButton(updatePlay) // contol the play button
     ui.clearBoardButton(clearBoard)
     ui.updateAlgorithm(updateAlgorithm)
+    ui.updateVisual(updateVisual)
+    console.log(ui.selectedVisual)
+
+    if (ui.selectedVisual === "Grid") {
+      graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
+    }
+    else {
+      graph = new Country(geoJson, app.clientWidth, app.clientHeight)
+
+    }
+    graph.createNeighbors()
 
     algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
     p.frameRate(speed)
@@ -68,6 +77,9 @@ const drawing = (p: p5) => {
       graph.addObstacle(p.mouseX, p.mouseY);
     }
   };
+  p.mouseMoved = () => {
+    graph.onMouseMove(p.mouseX, p.mouseY, p)
+  }
   const plantFlag = () => {
     const selected = ui.selectedFlag;
     if (selected === "obstacle") {
@@ -84,9 +96,19 @@ const drawing = (p: p5) => {
   }
   function updatePlay() {
     if (graph.start && graph.end) {
+      graph.clearHighlight() // clear the board first
       iterator = algorithm.findPath(graph, graph.start, graph.end);
-      // grid.clearHighlights() // clear the board first
     }
+  }
+  function updateVisual(selectedVisual: "Grid" | "Map") {
+    if (!app || !geoJson) return
+    if (selectedVisual === "Grid") {
+      graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
+    }
+    else {
+      graph = new Country(geoJson, app.clientWidth, app.clientHeight)
+    }
+    graph.createNeighbors()
   }
 
   function updateAlgorithm(selectedAlgorithm: ALGORITHMS) {
@@ -94,7 +116,7 @@ const drawing = (p: p5) => {
     algorithm = Algorithms.algorithms(selectedAlgorithm);
   }
   const clearBoard = () => {
-    // grid.clearBoard()
+    graph.clearGraph()
   }
 
 }

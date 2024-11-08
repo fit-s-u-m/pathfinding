@@ -9,7 +9,6 @@ export class Country implements Graph {
   end: Cell | null = null;
   cellType: CellType = "normal"
 
-  highlightCell: Map<number, HIGHLIGHT> = new Map();
   algorithsmPathCells: Cell[] = [];
   currentScan: Cell | null = null;
 
@@ -34,6 +33,7 @@ export class Country implements Graph {
   setStart(x: number, y: number): void {
     for (let city of this.cities) {
       if (city.isInCell(x, y)) {
+        if (this.start) this.start.beNormal()
         city.beStart()
         this.start = city
       }
@@ -42,6 +42,7 @@ export class Country implements Graph {
   setEnd(x: number, y: number): void {
     for (let city of this.cities) {
       if (city.isInCell(x, y)) {
+        if (this.end) this.end.beNormal()
         city.beEnd()
         this.end = city
       }
@@ -63,17 +64,20 @@ export class Country implements Graph {
   getObstacles(): Cell[] {
     return this.cities.filter(city => city.type === "obstacle")
   }
+  getHighlights(): Cell[] {
+    return this.cities.filter(city => city.type === "highlight")
+  }
   getWeight(cell1: Cell, cell2: Cell): number {
     return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
   }
 
-  makeNeighbors() {
+  createNeighbors() {
     for (let city of this.cities) {
       for (let otherCity of this.cities) {
         if (city !== otherCity) {
           const distance = this.getWeight(city, otherCity)
-          if (distance < 50) {
-            city.makeConnection(otherCity)
+          if (distance < 2 && city.type !== "obstacle" && otherCity.type !== "obstacle") {
+            city.makeConnection(otherCity, distance)
           }
         }
       }
@@ -127,6 +131,18 @@ export class Country implements Graph {
   show(p: p5): void {
     for (let city of this.cities) {
       city.show(p)
+    }
+  }
+
+  clearHighlight(): void {
+    for (let city of this.cities) {
+      if (city.type === "path" || city.type === "highlight")
+        city.beNormal()
+    }
+  }
+  clearGraph(): void {
+    for (let city of this.cities) {
+      city.beNormal()
     }
   }
   resize(width: number, height: number): void {

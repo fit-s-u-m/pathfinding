@@ -1,16 +1,18 @@
-import { CELL, HIGHLIGHT, State } from "../type";
-import { Grid } from "../util/grid";
+import { COLOR, State } from "../type";
+import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { Queue } from "../dataStructures/Queue";
+import { Cell } from "../util/cell";
+import { colors } from "../util/colors";
 
 export class Dijkstra implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
   private shortestDistance: Map<number, number> = new Map(); // map(index,dist)
-  private queue: Queue<CELL> = new Queue();
-  private previous: Map<number, CELL> = new Map();
+  private queue: Queue<Cell> = new Queue();
+  private previous: Map<number, Cell> = new Map();
 
   // Correctly defining the generator function
-  *findPath(grid: Grid, start: CELL, end: CELL): Generator<State> {
+  *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
     console.log("running dijkstra")
 
     // clear prev data
@@ -19,9 +21,9 @@ export class Dijkstra implements PathFindingAlgorithm {
     this.previous = new Map();
     this.shortestDistance = new Map(); // map(index,dist)
 
-    this.visited.add(grid.toNumber(start));
+    this.visited.add(graph.toNumber(start));
     this.queue.enqueue(start);
-    this.shortestDistance.set(grid.toNumber(start), 0)
+    this.shortestDistance.set(graph.toNumber(start), 0)
     let found = false;
 
     while (!this.queue.isEmpty() && !found) {
@@ -29,42 +31,47 @@ export class Dijkstra implements PathFindingAlgorithm {
       console.log(current, "current cell checking");
       if (!current) break;
 
-      const neighbors = grid.getNeighbors(current);
-      this.visited.add(grid.toNumber(current));
+      const neighbors = current.neighbors.filter((cell: Cell) => cell.type !== "obstacle");
+      this.visited.add(graph.toNumber(current));
       for (const cell of neighbors) {
-        if (this.visited.has(grid.toNumber(cell))) continue;
+        if (this.visited.has(graph.toNumber(cell))) continue;
 
 
-        const currentWeight = this.calculateWeight(current, cell)
-        const runningWeight = currentWeight + this.shortestDistance.get(grid.toNumber(current))
-        const prevWeight = this.shortestDistance.get(grid.toNumber(cell))
+        const currentWeight = graph.getWeight(current, cell)
+        const runningWeight = currentWeight + this.shortestDistance.get(graph.toNumber(current))
+        const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
         console.log("running weight", runningWeight, "prev Weight", prevWeight, cell)
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
-          this.previous.set(grid.toNumber(cell), current);
-          this.shortestDistance.set(grid.toNumber(cell), runningWeight)
-          const highlight = this.calculateHighlightColor(grid, cell, end, [0, 0, 196]);
-          grid.highlightCell.set(grid.toNumber(cell), highlight);
+          this.previous.set(graph.toNumber(cell), current);
+          this.shortestDistance.set(graph.toNumber(cell), runningWeight)
+          cell.highlight(colors.primary as COLOR);// FIXME: this is not working
+          cell.name = runningWeight.toFixed(1)
           this.queue.enqueue(cell);
           console.log("Found shortest", runningWeight, "at ", cell);
         }
         else {
-          const highlight = this.calculateHighlightColor(grid, cell, end, [198, 0, 0]);
-          grid.highlightCell.set(grid.toNumber(cell), highlight);
+          cell.highlight(colors.secondary as COLOR);// FIXME: this is not working
+          cell.name = prevWeight.toFixed(1)
           console.log("shortest", prevWeight, "at ", cell);
         }
-        grid.currentScan = cell
+        graph.currentScan = cell
 
         // Constructing the state to yield
-        const state: State = {
-          obstacles: grid.obstacles,
-          highlightCell: grid.highlightCell,
-          algorithsmPathCells: grid.algorithsmPathCells,
-        };
+        if (start && end) {
+          const state: State = {
+            start,
+            end,
+            obstacles: graph.getObstacles(),
+            highlightCell: graph.getHighlights(),
+            algorithsmPathCells: graph.algorithsmPathCells,
+          };
 
-        yield state;
+          yield state;
 
-        if (cell.row === end.row && cell.col === end.col) {
+        }
+
+        if (graph.toNumber(cell) === graph.toNumber(end)) {
           found = true
           break
         }
@@ -72,7 +79,7 @@ export class Dijkstra implements PathFindingAlgorithm {
     }
 
     // At the end of the pathfinding, reconstruct the path
-    yield* this.reconstructPath(grid, start, end);
+    yield* this.reconstructPath(graph, start, end);
 
   }
   reset() {
@@ -81,40 +88,37 @@ export class Dijkstra implements PathFindingAlgorithm {
     this.previous = new Map();
 
   }
-  calculateWeight(cell1: CELL, cell2: CELL) {
-    return Math.sqrt(Math.abs(cell1.row - cell2.row) ** 2 + Math.abs(cell1.col - cell2.col) ** 2);
-  }
-
-  calculateHighlightColor(grid: Grid, cell: CELL, end: CELL, initialColor: [number, number, number] = [0, 255, 255]): HIGHLIGHT {
-    if (grid.toNumber(cell) === grid.toNumber(end)) return { color: [255, 0, 0, 255], text: "End" };
-
-    const distanceToEnd = this.calculateWeight(cell, end)
-    const maxDistance = Math.sqrt(grid.numRow ** 2 + grid.numCol ** 2);
-    const alpha = 1 - distanceToEnd / maxDistance;
-    const color: [number, number, number, number] = [...initialColor, alpha * 255];
-
-    return { color, text: distanceToEnd.toFixed(1).toString() };
-  }
-
-  *reconstructPath(grid: Grid, start: CELL, end: CELL) {
-    let prevCell = this.previous.get(grid.toNumber(end));
-    let path: CELL[] = [];
+  // calculateHighlightColor(graph: Graph, cell: Cell, end: Cell, initialColor: [number, number, number] = [0, 255, 255]): HIGHLIGHT {
+  //   if (graph.toNumber(cell) === graph.toNumber(end)) return { color: [255, 0, 0, 255], text: "End" };
+  //
+  //   const distanceToEnd = graph.getWeight(cell, end);
+  //   const maxDistance = 5
+  //   const alpha = 1 - distanceToEnd / maxDistance;
+  //   const color: [number, number, number, number] = [...initialColor, alpha * 255];
+  //
+  //   return { color, text: distanceToEnd.toFixed(1).toString() };
+  // }
+  //
+  *reconstructPath(graph: Graph, start: Cell, end: Cell) {
+    let prevCell = this.previous.get(graph.toNumber(end));
+    let path: Cell[] = [];
     if (!prevCell) return [];
 
     console.log("reconstructing path", prevCell);
-    while (grid.toNumber(prevCell) !== grid.toNumber(start)) {
-      if (!prevCell) break;
+    while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
       console.log("reconstructing path", prevCell);
-      grid.algorithsmPathCells.push(prevCell);
+      graph.addPathCell(prevCell);
       path.push(prevCell);
       const state: State = {
-        obstacles: grid.obstacles,
-        highlightCell: grid.highlightCell,
-        algorithsmPathCells: grid.algorithsmPathCells,
+        start,
+        end,
+        obstacles: graph.getObstacles(),
+        highlightCell: graph.getHighlights(),
+        algorithsmPathCells: graph.algorithsmPathCells,
       };
 
       yield state;
-      prevCell = this.previous.get(grid.toNumber(prevCell));
+      prevCell = this.previous.get(graph.toNumber(prevCell));
     }
     path.push(start);
     return path;

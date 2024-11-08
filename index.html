@@ -64,48 +64,6 @@
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1 gap-5 disabled">
-        <li class="flex flex-col" x-data="{numRow:30}">
-          <label for="num-row" class="text-primary-color m-0">Num Row</label>
-
-          <div class="flex items-center rounded border border-primary-color-light m-0 h-8">
-            <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
-              @click="Math.max(1,numRow--)">
-              &minus;
-            </button>
-
-            <input type="number" id="num-row" value="1" x-model="numRow"
-              class="h-8 w-16 bg-primary-color-light border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
-
-            <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
-              @click="numRow++">
-              &plus;
-            </button>
-          </div>
-        </li>
-        <li>
-          <div x-data="{ numCol: 30 }" class="flex flex-col ">
-            <label for="num-col" class="text-primary-color">Num Column</label>
-
-            <div class="flex items-center rounded border border-primary-color-light h-8">
-              <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
-                @click.stop="numCol = Math.max(1, numCol - 1)">
-
-                &minus;
-              </button>
-
-              <input type="number" id="num-col" x-model="numCol"
-                class="h-8 w-16 bg-primary-color-light border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
-
-              <button type="button" class="size-10 leading-10 text-secondary-color transition hover:opacity-75"
-                @click.stop="numCol++">
-                &plus;
-              </button>
-            </div>
-          </div>
-
-        </li>
-
-
         <li class="flex flex-row gap-5 items-center">
           <button data-value="start" @click="selected='start'"
             :class="selected =='start'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color'  "
@@ -142,11 +100,21 @@
           </select>
 
         </li>
+        <li class="justify-center">
+
+          <select name="visual" id="visual"
+            class=" select-md select-ghost w-full rounded-lg  bg-primary-color-light text-primary-color">
+            <option disabled>Select visualization</option>
+            <option>Grid</option>
+            <option>Map</option>
+          </select>
+
+        </li>
       </ul>
     </div>
     <div class="navbar-end">
       <div class="flex flex-row gap-10">
-        <div class="clear-board">
+        <div class="clear-board text-primary-color bg-secondary-color">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             class="stroke-primary-color" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>

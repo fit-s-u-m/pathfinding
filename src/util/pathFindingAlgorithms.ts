@@ -11,7 +11,7 @@ export class Algorithms {
     switch (algorithm) {
       case "A* algorithms":
       case "Dijkstra’s algorithm":
-      // return new Dijkstra();
+        return new Dijkstra();
       case "Maximum Flow algorithm":
       case "Minimum Spanning Tree":
       case "Breadth-First Search":

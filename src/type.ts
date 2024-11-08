@@ -1,7 +1,7 @@
 import { Cell } from "./util/cell";
 
 export type CELL = { row: number; col: number };
-export type CellType = "start" | "end" | "obstacle" | "normal" | "path";
+export type CellType = "start" | "end" | "obstacle" | "normal" | "path" | "highlight";
 export type SELECT = "start" | "end" | "obstacle";
 export type ALGORITHMS =
   | "A* algorithms"
@@ -16,8 +16,10 @@ export type ALGORITHMS =
 export type COLOR = [number, number, number, number];
 export type HIGHLIGHT = { text: string; color: COLOR };
 export type State = {
+  start: CELL;
+  end: CELL;
   obstacles: Cell[],
-  highlightCell: Map<number, HIGHLIGHT>,
+  highlightCell: Cell[],
   algorithsmPathCells: Cell[],
 }
 export type SUBJSON = {
