@@ -83,6 +83,12 @@ export class City implements Cell {
     if (this.addGlow) {
       p.drawingContext.shadowColor = "red"
       p.drawingContext.shadowBlur = 10
+      p.drawingContext.shadowColor = "yellow"
+      p.drawingContext.shadowBlur = 30
+      p.drawingContext.shadowColor = "yellow"
+      p.drawingContext.shadowBlur = 50
+      p.circle(this.location.x, this.location.y, this.radius)
+      p.circle(this.location.x, this.location.y, this.radius)
     }
     p.fill(this.color)
     p.circle(this.location.x, this.location.y, this.radius)

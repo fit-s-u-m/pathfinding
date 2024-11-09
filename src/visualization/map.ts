@@ -147,12 +147,12 @@ export class Country implements Graph {
     const city = this.getCell(x, y)
     if (city) {
       p.cursor(p.CROSS)
-      city.showText(city.name, 40, p)
       city.highlightArrow(p)
       city.showDistance(this.getActualDistance.bind(this), p)
       for (let neighbors of city.neighbors) {
         neighbors.cell.showText(neighbors.cell.name, 12, p)
       }
+      city.showText(city.name, 40, p)
     }
   }
   private toRadians(degree: number) {
