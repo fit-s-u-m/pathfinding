@@ -48,10 +48,10 @@ const drawing = (p: p5) => {
     graph.createNeighbors()
 
     algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
-    p.frameRate(speed)
   };
   p.draw = () => {
     p.clear()
+    p.cursor(p.ARROW);
     graph.show(p);
     if (p.mouseIsPressed) {
       plantFlag()
@@ -66,8 +66,8 @@ const drawing = (p: p5) => {
         }
       }
     }
-
     graph.onMouseHover(p.mouseX, p.mouseY, p)
+    // p.cursor(p.CROSS);
   };
   p.windowResized = () => {
     p.resizeCanvas(app.clientWidth, app.clientHeight);
@@ -91,7 +91,6 @@ const drawing = (p: p5) => {
   };
   function updateSpeed(value: number) {
     speed = value
-    p.frameRate(value)
   }
   function updatePlay() {
     if (graph.start && graph.end) {

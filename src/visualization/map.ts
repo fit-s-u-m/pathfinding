@@ -142,6 +142,7 @@ export class Country implements Graph {
   onMouseHover(x: number, y: number, p: p5) {
     const city = this.getCell(x, y)
     if (city) {
+      p.cursor(p.CROSS)
       city.showText(city.name, 40, p)
       city.highlightArrow(p)
       city.showDistance(this.getActualDistance.bind(this), p)
