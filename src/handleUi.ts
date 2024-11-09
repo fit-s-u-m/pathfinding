@@ -5,9 +5,6 @@ export class Ui {
   selectedAlgorithm: ALGORITHMS = "Breadth-First Search";
   selectedVisual: "Grid" | "Map" = "Grid"
 
-  speed: p5.Element | null = null;
-  speedLabel: p5.Element | null = null;
-
   algorithm: p5.Element[] | null = null;
   selectables: p5.Element[] | null = null;
   flag: p5.Element[] | null = null;
@@ -23,14 +20,10 @@ export class Ui {
     const clearboard = p.select(".clear-board")
     const flag = p.selectAll(".selected-flag")
     const playButtons = p.selectAll(".play")
-    const speed = p.select("#speed");
     const algorithm = p.selectAll("#algorithms");
-    const speedLabel = p.select("#speed-label");
     const visual = p.select("#visual")
-    if (!speed || !algorithm || !visual) return;
+    if (!algorithm || !visual) return;
 
-    this.speed = speed;
-    this.speedLabel = speedLabel;
     this.algorithm = algorithm;
     this.selectables = selectables
     this.playButtons = playButtons
@@ -81,16 +74,6 @@ export class Ui {
       })
     }
   }
-  updateSpeed(update: Function) {
-    if (!this.speed) return;
-    this.speed.changed(() => {
-      if (!this.speed) return;
-      const speed = this.speed.value()
-      update(speed);
-      if (!this.speedLabel) return
-      this.speedLabel.html(speed == 0 ? "Paused " : "Speed: " + speed);
-    });
-  }
   updateFlag() {
     if (!this.selectables) return
     for (let buttons of this.selectables) {
@@ -105,9 +88,6 @@ export class Ui {
     this.playButtons.forEach((button) => {
       button.mouseClicked(() => {
         update()
-        // this.isPlay = !this.isPlay
-        // button.html(this.isPlay ? "Pause" : "Play")
-
       })
     })
   }

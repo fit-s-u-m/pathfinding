@@ -21,16 +21,14 @@ const drawing = (p: p5) => {
   let graph: Graph;
   let ui: Ui;
   let algorithm: PathFindingAlgorithm;
-  let speed: number = 10
   let iterator: Iterator<State>
   let geoJson: any
   p.preload = () => {
-    geoJson = p.loadJSON("../public/map.geojson")
+    geoJson = p.loadJSON("/map.geojson")
   }
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
     ui = new Ui(p);
-    ui.updateSpeed(updateSpeed);
     ui.updateFlag()  // label the selected flag
     ui.updatePlayButton(updatePlay) // contol the play button
     ui.clearBoardButton(clearBoard)
@@ -89,9 +87,6 @@ const drawing = (p: p5) => {
       graph.setEnd(p.mouseX, p.mouseY);
     }
   };
-  function updateSpeed(value: number) {
-    speed = value
-  }
   function updatePlay() {
     if (graph.start && graph.end) {
       graph.clearHighlight() // clear the board first

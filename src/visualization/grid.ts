@@ -201,8 +201,10 @@ export class Grid implements Graph {
 
   onMouseHover(x: number, y: number, p: p5) {
     const cell = this.getCell(x, y)
-    if (cell)
+    if (cell) {
       cell.showText(cell.text, 20, p)
+      p.cursor(p.CROSS)
+    }
   }
 
   clearGraph(): void {
