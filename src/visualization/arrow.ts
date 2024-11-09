@@ -59,13 +59,14 @@ export class Arrow {
     p.stroke("black")
     p.noFill()
     p.textAlign(p.CENTER)
-    if (angle <= Math.PI * 3 / 2 && angle >= Math.PI / 2) {
+    if (Math.abs(angle) <= Math.PI * 3 / 2 && Math.abs(angle) >= Math.PI / 2) {
       p.translate(radius / 2, 0)
       p.rotate(Math.PI)
       p.text(distance, 0, 0)
     }
-    else
+    else {
       p.text(distance, radius / 2, 0)
+    }
 
     p.pop()
   }
