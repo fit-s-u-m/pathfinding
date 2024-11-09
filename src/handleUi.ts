@@ -96,6 +96,7 @@ export class Ui {
     for (let buttons of this.selectables) {
       buttons.mouseClicked(() => {
         this.selectedFlag = buttons.elt.dataset.value
+        console.log(this.selectedFlag)
       })
     }
   }

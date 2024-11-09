@@ -15,6 +15,7 @@ export class City implements Cell {
   neighbors: { cell: Cell, weight: number, arrow: Arrow }[] = []
   type: CellType = "normal"
   text: string = ""
+  addGlow: boolean = false
 
   constructor(data: CityData, project: Function) {
     this.name = data.name
@@ -43,10 +44,12 @@ export class City implements Cell {
   beInPath(): void {
     this.type = "path"
     this.color = colors.path as COLOR
+    this.addGlow = true
   }
   beNormal(): void {
     this.type = "normal"
     this.color = colors.background as COLOR
+    this.addGlow = false
   }
 
 
@@ -76,8 +79,14 @@ export class City implements Cell {
     return Math.sqrt((x - this.location.x) ** 2 + (y - this.location.y) ** 2) <= this.radius
   }
   show(p: p5) {
+    p.push()
+    if (this.addGlow) {
+      p.drawingContext.shadowColor = "red"
+      p.drawingContext.shadowBlur = 10
+    }
     p.fill(this.color)
     p.circle(this.location.x, this.location.y, this.radius)
+    p.pop()
     for (let neighbor of this.neighbors) {
       neighbor.arrow.show(p)
     }
@@ -87,10 +96,12 @@ export class City implements Cell {
   }
   showText(text: string, size: number, p: p5): void {
     this.name = text
+    p.push()
     p.fill("black")
     p.textSize(size)
     p.textAlign(p.CENTER)
     p.text(this.name, this.location.x, this.location.y)
+    p.pop()
   }
 
   resize() {
