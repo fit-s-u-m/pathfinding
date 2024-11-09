@@ -31,8 +31,13 @@ export class Dijkstra implements PathFindingAlgorithm {
       console.log(current, "current cell checking");
       if (!current) break;
 
-      const neighbors = current.neighbors.filter((cell: Cell) => cell.type !== "obstacle");
+      const neighbors = current.neighbors
+        .map(neighbor => neighbor.cell)
+        .filter((cell: Cell) => cell.type !== "obstacle")
+        .filter((cell: Cell) => !this.visited.has(graph.toNumber(cell)));
+
       this.visited.add(graph.toNumber(current));
+
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
@@ -42,19 +47,34 @@ export class Dijkstra implements PathFindingAlgorithm {
         const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
         console.log("running weight", runningWeight, "prev Weight", prevWeight, cell)
+
+        let color: COLOR
+        let weight: number
+
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
           this.previous.set(graph.toNumber(cell), current);
           this.shortestDistance.set(graph.toNumber(cell), runningWeight)
-          cell.highlight(colors.primary as COLOR);// FIXME: this is not working
-          cell.name = runningWeight.toFixed(1)
+
+          color = colors.primary as COLOR
+          weight = runningWeight
+
           this.queue.enqueue(cell);
           console.log("Found shortest", runningWeight, "at ", cell);
         }
         else {
-          cell.highlight(colors.secondary as COLOR);// FIXME: this is not working
-          cell.name = prevWeight.toFixed(1)
+
+          color = colors.secondary as COLOR
+          weight = prevWeight
+
           console.log("shortest", prevWeight, "at ", cell);
         }
+        if (graph.toNumber(cell) === graph.toNumber(end)) {
+          found = true
+          break
+        }
+
+        cell.highlight(color)
+        cell.text = weight.toFixed(1)
         graph.currentScan = cell
 
         // Constructing the state to yield
@@ -68,12 +88,6 @@ export class Dijkstra implements PathFindingAlgorithm {
           };
 
           yield state;
-
-        }
-
-        if (graph.toNumber(cell) === graph.toNumber(end)) {
-          found = true
-          break
         }
       }
     }
@@ -88,25 +102,18 @@ export class Dijkstra implements PathFindingAlgorithm {
     this.previous = new Map();
 
   }
-  // calculateHighlightColor(graph: Graph, cell: Cell, end: Cell, initialColor: [number, number, number] = [0, 255, 255]): HIGHLIGHT {
-  //   if (graph.toNumber(cell) === graph.toNumber(end)) return { color: [255, 0, 0, 255], text: "End" };
-  //
-  //   const distanceToEnd = graph.getWeight(cell, end);
-  //   const maxDistance = 5
-  //   const alpha = 1 - distanceToEnd / maxDistance;
-  //   const color: [number, number, number, number] = [...initialColor, alpha * 255];
-  //
-  //   return { color, text: distanceToEnd.toFixed(1).toString() };
-  // }
-  //
   *reconstructPath(graph: Graph, start: Cell, end: Cell) {
     let prevCell = this.previous.get(graph.toNumber(end));
     let path: Cell[] = [];
     if (!prevCell) return [];
 
+    graph.highlighightConnection(prevCell, end)
     console.log("reconstructing path", prevCell);
+
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
+
       console.log("reconstructing path", prevCell);
+
       graph.addPathCell(prevCell);
       path.push(prevCell);
       const state: State = {
@@ -118,8 +125,14 @@ export class Dijkstra implements PathFindingAlgorithm {
       };
 
       yield state;
-      prevCell = this.previous.get(graph.toNumber(prevCell));
+      const nextCell = this.previous.get(graph.toNumber(prevCell));
+      if (nextCell)
+        graph.highlighightConnection(nextCell, prevCell)
+      prevCell = nextCell
     }
+
+    if (prevCell)
+      graph.highlighightConnection(start, prevCell)
     path.push(start);
     return path;
   }

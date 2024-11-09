@@ -2,6 +2,7 @@ import p5 from "p5";
 import { Cell } from "../util/cell";
 import { Graph } from "../dataStructures/Graph";
 import { GridCell } from "./gridCell";
+import { Arrow } from "./arrow";
 
 export class Grid implements Graph {
   canvasWidth: number;
@@ -37,10 +38,10 @@ export class Grid implements Graph {
   makeGrid() {
     for (let row = 0; row < this.numRow; row++) {
       for (let col = 0; col < this.numCol; col++) {
-        const x = col * this.cellSize + this.offsetX;
-        const y = row * this.cellSize + this.offsetY;
+        const x = col * this.cellSize + this.offsetX + this.cellSize / 2;
+        const y = row * this.cellSize + this.offsetY + this.cellSize / 2;
         const index = row * this.numCol + col
-        const cell = new GridCell(x, y, this.cellSize, row, col)
+        const cell = new GridCell(x, y, this.cellSize, row, col, index.toString())
         this.cells.set(index, cell)
       }
     }
@@ -57,7 +58,9 @@ export class Grid implements Graph {
       const topNeighborCell = this.cells.get(topNeighborCellIndex) as GridCell
       if (topNeighborCell && topNeighborCell.type !== "obstacle") {
         neighbors.push(topNeighborCell);
-        cell.neighbors.push(topNeighborCell)
+        const weight = this.getNormalWeight(cell, topNeighborCell)
+        const arrow = new Arrow(cell, topNeighborCell, weight)
+        cell.neighbors.push({ cell: topNeighborCell, weight: this.getWeight(cell, topNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1 && cell.row > 0) {
@@ -65,7 +68,9 @@ export class Grid implements Graph {
       const topRightNeighborCell = this.cells.get(topRightNeighborCellIndex)
       if (topRightNeighborCell && topRightNeighborCell.type !== "obstacle") {
         neighbors.push(topRightNeighborCell);
-        cell.neighbors.push(topRightNeighborCell)
+        const weight = this.getNormalWeight(cell, topRightNeighborCell)
+        const arrow = new Arrow(cell, topRightNeighborCell, weight)
+        cell.neighbors.push({ cell: topRightNeighborCell, weight: this.getWeight(cell, topRightNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1) {
@@ -73,7 +78,9 @@ export class Grid implements Graph {
       const rightNeighborCell = this.cells.get(rightNeighborCellIndex)
       if (rightNeighborCell && rightNeighborCell.type !== "obstacle") {
         neighbors.push(rightNeighborCell);
-        cell.neighbors.push(rightNeighborCell)
+        const weight = this.getNormalWeight(cell, rightNeighborCell)
+        const arrow = new Arrow(cell, rightNeighborCell, weight)
+        cell.neighbors.push({ cell: rightNeighborCell, weight: this.getWeight(cell, rightNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1 && cell.row < this.numRow - 1) {
@@ -81,7 +88,9 @@ export class Grid implements Graph {
       const downRightNeighborCell = this.cells.get(downRightNeighborCellIndex)
       if (downRightNeighborCell && downRightNeighborCell.type !== "obstacle") {
         neighbors.push(downRightNeighborCell);
-        cell.neighbors.push(downRightNeighborCell)
+        const weight = this.getNormalWeight(cell, downRightNeighborCell)
+        const arrow = new Arrow(cell, downRightNeighborCell, weight)
+        cell.neighbors.push({ cell: downRightNeighborCell, weight: this.getWeight(cell, downRightNeighborCell), arrow })
       }
     }
     if (cell.row < this.numRow - 1) {
@@ -89,7 +98,9 @@ export class Grid implements Graph {
       const downNeighborCell = this.cells.get(downNeighborCellIndex)
       if (downNeighborCell && downNeighborCell.type !== "obstacle") {
         neighbors.push(downNeighborCell);
-        cell.neighbors.push(downNeighborCell)
+        const weight = this.getNormalWeight(cell, downNeighborCell)
+        const arrow = new Arrow(cell, downNeighborCell, weight)
+        cell.neighbors.push({ cell: downNeighborCell, weight: this.getWeight(cell, downNeighborCell), arrow })
       }
     }
     if (cell.col > 0 && cell.row < this.numRow - 1) {
@@ -97,7 +108,9 @@ export class Grid implements Graph {
       const downLeftNeighborCell = this.cells.get(downLeftNeighborCellIndex)
       if (downLeftNeighborCell && downLeftNeighborCell.type !== "obstacle") {
         neighbors.push(downLeftNeighborCell);
-        cell.neighbors.push(downLeftNeighborCell)
+        const weight = this.getNormalWeight(cell, downLeftNeighborCell)
+        const arrow = new Arrow(cell, downLeftNeighborCell, weight)
+        cell.neighbors.push({ cell: downLeftNeighborCell, weight: this.getWeight(cell, downLeftNeighborCell), arrow })
       }
     }
     if (cell.col > 0) {
@@ -105,7 +118,9 @@ export class Grid implements Graph {
       const leftNeighborCell = this.cells.get(leftNeighborCellIndex)
       if (leftNeighborCell && leftNeighborCell.type !== "obstacle") {
         neighbors.push(leftNeighborCell);
-        cell.neighbors.push(leftNeighborCell)
+        const weight = this.getNormalWeight(cell, leftNeighborCell)
+        const arrow = new Arrow(cell, leftNeighborCell, weight)
+        cell.neighbors.push({ cell: leftNeighborCell, weight: this.getWeight(cell, leftNeighborCell), arrow })
       }
     }
     if (cell.col > 0 && cell.row > 0) {
@@ -113,7 +128,9 @@ export class Grid implements Graph {
       const topLeftNeighborCell = this.cells.get(topLeftNeighborCellIndex)
       if (topLeftNeighborCell && topLeftNeighborCell.type !== "obstacle") {
         neighbors.push(topLeftNeighborCell);
-        cell.neighbors.push(topLeftNeighborCell)
+        const weight = this.getNormalWeight(cell, topLeftNeighborCell)
+        const arrow = new Arrow(cell, topLeftNeighborCell, weight)
+        cell.neighbors.push({ cell: topLeftNeighborCell, weight: this.getWeight(cell, topLeftNeighborCell), arrow })
       }
     }
     return neighbors;
@@ -125,7 +142,10 @@ export class Grid implements Graph {
   }
 
   getWeight(cell1: GridCell, cell2: GridCell): number {
-    return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
+    return Math.sqrt((cell1.row - cell2.row) ** 2 + (cell1.col - cell2.col) ** 2)
+  }
+  getNormalWeight(cell1: GridCell, cell2: GridCell): number { // TODO: make it scaleable
+    return Math.sqrt((cell1.row - cell2.row) ** 2 + (cell1.col - cell2.col) ** 2) / 2
   }
   getObstacles(): Cell[] {
     return Array.from(this.cells.values()).filter(cell => cell.type === "obstacle")
@@ -179,10 +199,10 @@ export class Grid implements Graph {
     }
   }
 
-  onMouseMove(x: number, y: number, p: p5) {
+  onMouseHover(x: number, y: number, p: p5) {
     const cell = this.getCell(x, y)
     if (cell)
-      cell.showText(cell.name, p)
+      cell.showText(cell.text, 20, p)
   }
 
   clearGraph(): void {
@@ -200,6 +220,12 @@ export class Grid implements Graph {
         cell.beNormal()
     }
   }
+  highlighightConnection(start: GridCell, end: GridCell): void {
+    const arrow = start.getNeighbor(end.name)?.arrow
+    if (arrow) {
+      arrow.bePath()
+    }
+  }
 
   update() {
     this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
@@ -208,8 +234,8 @@ export class Grid implements Graph {
 
     for (let cell of this.cells.values()) {
       cell.cellSize = this.cellSize
-      cell.location.x = cell.col * this.cellSize + this.offsetX
-      cell.location.y = cell.row * this.cellSize + this.offsetY
+      cell.location.x = cell.col * this.cellSize + this.offsetX + this.cellSize / 2
+      cell.location.y = cell.row * this.cellSize + this.offsetY + this.cellSize / 2
     }
   }
   resize(width: number, height: number) {

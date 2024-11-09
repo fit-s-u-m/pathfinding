@@ -1,11 +1,13 @@
 import p5 from "p5"
 import { CellType, COLOR } from "../type"
+import { Arrow } from "../visualization/arrow"
 
 export interface Cell {
   location: { x: number, y: number }
-  neighbors: Cell[]
+  neighbors: { cell: Cell, weight: number, arrow: Arrow }[]
   type: CellType
   name: string
+  text: string
 
   show(p: p5): void
 
@@ -17,7 +19,7 @@ export interface Cell {
 
   isInCell(x: number, y: number): void
 
-  showText(text: string, p: p5): void
+  showText(text: string, size: number, p: p5): void
   highlight(color: COLOR): void
 
 }

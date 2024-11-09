@@ -2,30 +2,30 @@ import p5 from "p5";
 import { CellType, CityData, COLOR } from "../type";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
+import { Arrow } from "./arrow";
 
 export class City implements Cell {
   name: string
+  coordLocation: { x: number, y: number }
   location: { x: number, y: number }
-  canvasPosition: { x: number, y: number }
   project: Function
 
   radius = 30
   color
-  neighbors: City[] = []
+  neighbors: { cell: Cell, weight: number, arrow: Arrow }[] = []
   type: CellType = "normal"
-
-  arrowColor: string = "black"
-  arrowSize: number = 2
+  text: string = ""
 
   constructor(data: CityData, project: Function) {
     this.name = data.name
-    this.location = { x: data.location[0], y: data.location[1] }
-    this.canvasPosition = project(this.location)
+    this.coordLocation = { x: data.location[0], y: data.location[1] }
+    this.location = project(this.coordLocation)
     this.project = project
     this.color = colors.background as COLOR
   }
   makeConnection(city: City, weight: number): void {
-    this.neighbors.push(city)
+    const arrow = new Arrow(this, city, weight)
+    this.neighbors.push({ cell: city, weight, arrow })
   }
 
   beEnd(): void {
@@ -51,49 +51,49 @@ export class City implements Cell {
 
 
   getObstacles(): Cell[] {
-    return this.neighbors.filter(city => city.type === "obstacle")
+    return this.neighbors.filter(neighbor => neighbor.cell.type === "obstacle").map(neighbor => neighbor.cell)
   }
   getType() {
     return this.type
   }
   highlight(color: COLOR): void {
     this.color = color
+    this.type = "highlight"
+  }
+  highlightArrow(p: p5) {
+    this.neighbors.forEach(neighbor => {
+      neighbor.arrow.showHighlight(p)
+    })
+  }
+  showDistance(getDistance: Function, p: p5) {
+    this.neighbors.forEach(neighbor => {
+      const distance = getDistance(neighbor.cell, this) as number
+      const size = 20
+      neighbor.arrow.drawDistance(p, distance.toFixed(0), size, colors.accent as COLOR)
+    })
   }
   isInCell(x: number, y: number) {
-    return Math.sqrt((x - this.canvasPosition.x) ** 2 + (y - this.canvasPosition.y) ** 2) <= this.radius
-  }
-
-
-  drawArrow(startX: number, startY: number, endX: number, endY: number, p: p5) {
-    const radius = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2)
-    const angle = Math.atan2((endY - startY), (endX - startX))
-    const triangleSize = 10
-    p.push()
-    p.translate(startX, startY)
-    p.rotate(angle)
-    p.strokeWeight(this.arrowSize)
-    // p.fill(this.arrowColor)
-    p.stroke(colors.accent as COLOR)
-    p.line(0, 0, radius, 0)
-    p.triangle(radius, 0, radius - triangleSize, triangleSize / 2, radius - triangleSize, -triangleSize / 2)
-    p.pop()
+    return Math.sqrt((x - this.location.x) ** 2 + (y - this.location.y) ** 2) <= this.radius
   }
   show(p: p5) {
     p.fill(this.color)
-    p.circle(this.canvasPosition.x, this.canvasPosition.y, this.radius)
-    for (let city of this.neighbors) {
-      this.drawArrow(this.canvasPosition.x, this.canvasPosition.y, city.canvasPosition.x, city.canvasPosition.y, p)
+    p.circle(this.location.x, this.location.y, this.radius)
+    for (let neighbor of this.neighbors) {
+      neighbor.arrow.show(p)
     }
   }
-  showText(text: string, p: p5): void {
+  getNeighbor(name: string) {
+    return this.neighbors.filter(neighbor => neighbor.cell.name === name).pop()
+  }
+  showText(text: string, size: number, p: p5): void {
     this.name = text
     p.fill("black")
-    p.textSize(30)
+    p.textSize(size)
     p.textAlign(p.CENTER)
-    p.text(this.name, this.canvasPosition.x, this.canvasPosition.y)
+    p.text(this.name, this.location.x, this.location.y)
   }
 
   resize() {
-    this.canvasPosition = this.project(this.location)
+    this.location = this.project(this.coordLocation)
   }
 }

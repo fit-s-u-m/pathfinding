@@ -2,27 +2,29 @@ import p5 from "p5"
 import { CellType, COLOR } from "../type"
 import { Cell } from "../util/cell"
 import { colors } from "../util/colors"
+import { Arrow } from "./arrow"
 
 export class GridCell implements Cell {
   location: { x: number, y: number }
-  neighbors: GridCell[] = []
+  neighbors: { cell: GridCell, weight: number, arrow: Arrow }[] = []
   name: string = ""
+  text: string = ""
   type: CellType = "normal"
-  color: COLOR = [255, 255, 255, 255]
+  color: COLOR = colors.background as COLOR
   cellSize: number
   row: number
   col: number
 
-  constructor(x: number, y: number, cellSize: number, row: number, col: number) {
+  constructor(x: number, y: number, cellSize: number, row: number, col: number, name: string) {
     this.location = { x, y }
     this.cellSize = cellSize
     this.row = row
     this.col = col
+    this.name = name
   }
   show(p: p5) {
     p.fill(this.color)
-    p.square(this.location.x, this.location.y, this.cellSize)
-
+    p.square(this.location.x - this.cellSize / 2, this.location.y - this.cellSize / 2, this.cellSize)
   }
   beNormal(): void {
     this.type = "normal"
@@ -43,7 +45,7 @@ export class GridCell implements Cell {
   }
   beInPath(): void {
     this.type = "path"
-    this.color = colors.path as COLOR
+    this.color = colors.path_grid as COLOR
   }
   highlight(color: COLOR) {
     this.type = "highlight"
@@ -54,12 +56,27 @@ export class GridCell implements Cell {
     const yBound = y - this.location.y > 0 && y - this.location.y < this.cellSize
     return xBound && yBound
   }
+  getNeighbor(name: string) {
+    return this.neighbors.filter(neighbor => neighbor.cell.name === name).pop()
+  }
 
-  showText(text: string, p: p5) {
-    this.name = text
+  showText(text: string, size: number, p: p5) {
+    this.text = text
     p.fill("black")
     p.textAlign(p.CENTER)
-    p.text(this.name, this.location.x + this.cellSize / 2, this.location.y + this.cellSize / 2)
+    p.textSize(size)
+    p.text(this.text, this.location.x, this.location.y)
+
+    if (this.type != "obstacle") {
+      for (let neighbor of this.neighbors) {
+        if (neighbor.cell.type != "obstacle") {
+          neighbor.arrow.show(p)
+          const size = this.cellSize / 4
+          neighbor.arrow.drawDistance(p, neighbor.weight.toFixed(1), size)
+        }
+      }
+
+    }
   }
 
 }

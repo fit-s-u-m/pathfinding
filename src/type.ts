@@ -1,6 +1,5 @@
 import { Cell } from "./util/cell";
 
-export type CELL = { row: number; col: number };
 export type CellType = "start" | "end" | "obstacle" | "normal" | "path" | "highlight";
 export type SELECT = "start" | "end" | "obstacle";
 export type ALGORITHMS =
@@ -16,8 +15,8 @@ export type ALGORITHMS =
 export type COLOR = [number, number, number, number];
 export type HIGHLIGHT = { text: string; color: COLOR };
 export type State = {
-  start: CELL;
-  end: CELL;
+  start: Cell;
+  end: Cell;
   obstacles: Cell[],
   highlightCell: Cell[],
   algorithsmPathCells: Cell[],
@@ -40,3 +39,4 @@ export type CityData = {
   name: string,
   location: [number, number]
 }
+export type ArrowType = "disabled" | "highlight" | "normal" | "path"

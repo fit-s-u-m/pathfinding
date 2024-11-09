@@ -1,5 +1,5 @@
 import { Graph } from "../dataStructures/Graph";
-import { CellType, HIGHLIGHT } from "../type";
+import { CellType } from "../type";
 import { City } from "./city";
 import { Cell } from "../util/cell";
 import p5 from "p5";
@@ -60,6 +60,12 @@ export class Country implements Graph {
     this.algorithsmPathCells.push(cell)
     cell.beInPath()
   }
+  highlighightConnection(start: City, end: City): void {
+    const neighbor = start.getNeighbor(end.name)
+    console.log(neighbor)
+    if (neighbor)
+      neighbor.arrow.bePath()
+  }
 
   getObstacles(): Cell[] {
     return this.cities.filter(city => city.type === "obstacle")
@@ -70,14 +76,25 @@ export class Country implements Graph {
   getWeight(cell1: Cell, cell2: Cell): number {
     return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
   }
+  getNormalWeight(cell1: Cell, cell2: Cell): number {
+    const minScren = Math.min(this.canvasWidth, this.canvasHeight)
+    return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2) / minScren
+  }
+  getActualDistance(city1: City, city2: City): number {
+    return this.haversineDistance(
+      city1.coordLocation.x, city1.coordLocation.y,
+      city2.coordLocation.x, city2.coordLocation.y
+    )
+  }
 
   createNeighbors() {
     for (let city of this.cities) {
       for (let otherCity of this.cities) {
         if (city !== otherCity) {
-          const distance = this.getWeight(city, otherCity)
-          if (distance < 2 && city.type !== "obstacle" && otherCity.type !== "obstacle") {
-            city.makeConnection(otherCity, distance)
+          const weight = this.getNormalWeight(city, otherCity)
+          const random = Math.random()
+          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.5 && weight < 0.18) {
+            city.makeConnection(otherCity, weight)
           }
         }
       }
@@ -119,14 +136,44 @@ export class Country implements Graph {
     return this.cities.map(city => city.name).indexOf(cell.name)
   }
   getCell(x: number, y: number) {
-    return this.cities.filter((city: City) => city.isInCell(x, y))[0]
+    return this.cities.filter((city: City) => city.isInCell(x, y)).pop() // get last
   }
 
-  onMouseMove(x: number, y: number, p: p5) {
+  onMouseHover(x: number, y: number, p: p5) {
     const city = this.getCell(x, y)
-    if (city)
-      city.showText(city.name, p)
+    if (city) {
+      city.showText(city.name, 40, p)
+      city.highlightArrow(p)
+      city.showDistance(this.getActualDistance.bind(this), p)
+      for (let neighbors of city.neighbors) {
+        neighbors.cell.showText(neighbors.cell.name, 12, p)
+      }
+    }
   }
+  private toRadians(degree: number) {
+    return degree * Math.PI / 180
+  }
+  private haversineDistance(latitude1: number, longitude1: number, latitude2: number, longitude2: number) {
+    const radius = 6371; // Earth's radius in kilometers
+
+    // Convert the latitudes and longitudes from degrees to radians
+    const firstLatitude = this.toRadians(latitude1);
+    const secondLatitude = this.toRadians(latitude2);
+    const latitudeDifference = this.toRadians(latitude2 - latitude1);
+    const longitudeDifference = this.toRadians(longitude2 - longitude1);
+
+    // Haversine formula calculation
+    const a = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) +
+      Math.cos(firstLatitude) * Math.cos(secondLatitude) *
+      Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    // Distance in kilometers
+    const distance = radius * c;
+    return distance;
+  }
+
 
   show(p: p5): void {
     for (let city of this.cities) {

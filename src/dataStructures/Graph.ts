@@ -15,13 +15,15 @@ export interface Graph {
   toCell(num: number): Cell | undefined
 
   getObstacles(): Cell[]
+  getHighlights(): Cell[]
+  highlighightConnection(start: Cell, end: Cell): void
 
   setStart(x: number, y: number): void
   setEnd(x: number, y: number): void
   addObstacle(x: number, y: number): void
   addPathCell(cell: Cell): void
 
-  onMouseMove(x: number, y: number, p: p5): void
+  onMouseHover(x: number, y: number, p: p5): void
 
   clearHighlight(): void
   clearGraph(): void
