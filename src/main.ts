@@ -66,6 +66,8 @@ const drawing = (p: p5) => {
         }
       }
     }
+
+    graph.onMouseHover(p.mouseX, p.mouseY, p)
   };
   p.windowResized = () => {
     p.resizeCanvas(app.clientWidth, app.clientHeight);
@@ -77,9 +79,6 @@ const drawing = (p: p5) => {
       graph.addObstacle(p.mouseX, p.mouseY);
     }
   };
-  p.mouseMoved = () => {
-    graph.onMouseMove(p.mouseX, p.mouseY, p)
-  }
   const plantFlag = () => {
     const selected = ui.selectedFlag;
     if (selected === "obstacle") {
