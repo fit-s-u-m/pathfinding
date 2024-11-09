@@ -216,7 +216,7 @@ export class Grid implements Graph {
   }
   clearHighlight(): void {
     for (let cell of this.cells.values()) {
-      if (cell.type == "highlight")
+      if (cell.type == "highlight" || cell.type == "path")
         cell.beNormal()
     }
   }

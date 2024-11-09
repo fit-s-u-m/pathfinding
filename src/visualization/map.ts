@@ -3,6 +3,7 @@ import { CellType } from "../type";
 import { City } from "./city";
 import { Cell } from "../util/cell";
 import p5 from "p5";
+import { Arrow } from "./arrow";
 
 export class Country implements Graph {
   start: Cell | null = null;
@@ -14,6 +15,7 @@ export class Country implements Graph {
 
   canvasWidth: number
   canvasHeight: number
+  highlightedArrows: Arrow[] = []
 
   offsetX: number = 0
   offsetY: number = 0
@@ -63,8 +65,10 @@ export class Country implements Graph {
   highlighightConnection(start: City, end: City): void {
     const neighbor = start.getNeighbor(end.name)
     console.log(neighbor)
-    if (neighbor)
+    if (neighbor) {
       neighbor.arrow.bePath()
+      this.highlightedArrows.push(neighbor.arrow)
+    }
   }
 
   getObstacles(): Cell[] {
@@ -187,10 +191,16 @@ export class Country implements Graph {
       if (city.type === "path" || city.type === "highlight")
         city.beNormal()
     }
+    for (let arrow of this.highlightedArrows) {
+      arrow.beNormal()
+    }
   }
   clearGraph(): void {
     for (let city of this.cities) {
       city.beNormal()
+    }
+    for (let arrow of this.highlightedArrows) {
+      arrow.beNormal()
     }
   }
   resize(width: number, height: number): void {

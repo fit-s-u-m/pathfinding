@@ -91,9 +91,10 @@ export class Arrow {
     this.color = colors.path as COLOR
     this.thickness = 10
   }
-  // highlight() {
-  //   this.arrowType = "highlight"
-  //   this.color = colors.accent as COLOR
-  // }
+  beNormal() {
+    this.arrowType = "normal"
+    this.color = colors.primary as COLOR
+    this.thickness = 1
+  }
 
 }
