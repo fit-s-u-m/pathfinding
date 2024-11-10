@@ -17,6 +17,7 @@ export class Grid implements Graph {
 
   currentScan: GridCell | null = null
   algorithsmPathCells: GridCell[] = []
+  highlightedArrows: Arrow[] = []
 
   offsetX: number;
   offsetY: number;
@@ -221,11 +222,15 @@ export class Grid implements Graph {
       if (cell.type == "highlight" || cell.type == "path")
         cell.beNormal()
     }
+    for (let arrow of this.highlightedArrows) {
+      arrow.beNormal()
+    }
   }
   highlighightConnection(start: GridCell, end: GridCell): void {
     const arrow = start.getNeighbor(end.name)?.arrow
     if (arrow) {
       arrow.bePath()
+      this.highlightedArrows.push(arrow)
     }
   }
 
