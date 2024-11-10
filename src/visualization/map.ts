@@ -77,8 +77,8 @@ export class Country implements Graph {
   getHighlights(): Cell[] {
     return this.cities.filter(city => city.type === "highlight")
   }
-  getWeight(cell1: Cell, cell2: Cell): number {
-    return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
+  getWeight(cell1: City, cell2: City): number {
+    return this.getActualDistance(cell1, cell2)
   }
   getNormalWeight(cell1: Cell, cell2: Cell): number {
     const minScren = Math.min(this.canvasWidth, this.canvasHeight)
