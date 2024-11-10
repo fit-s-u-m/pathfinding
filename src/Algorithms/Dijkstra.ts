@@ -1,7 +1,6 @@
 import { COLOR, State } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
-import { Queue } from "../dataStructures/Queue";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
@@ -28,7 +27,6 @@ export class Dijkstra implements PathFindingAlgorithm {
     while (!this.Pqueue.isEmpty() && !found) {
       // const current = this.queue.dequeue();
       const current = this.Pqueue.dequeue();
-      console.log(current, "current cell checking");
       if (!current) break;
 
       const neighbors = current.neighbors
@@ -46,8 +44,6 @@ export class Dijkstra implements PathFindingAlgorithm {
         const runningWeight = currentWeight + this.shortestDistance.get(graph.toNumber(current))
         const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
-        console.log("running weight", runningWeight, "prev Weight", prevWeight, cell)
-
         let color: COLOR
         let weight: number
 
@@ -58,17 +54,12 @@ export class Dijkstra implements PathFindingAlgorithm {
           weight = runningWeight
 
           this.previous.set(graph.toNumber(cell), current);
-          // this.queue.enqueue(cell);
           this.Pqueue.enqueue(cell, runningWeight)
 
-          console.log("Found shortest", runningWeight, "at ", cell);
         }
         else {
-
           color = colors.secondary as COLOR
           weight = prevWeight
-
-          console.log("shortest", prevWeight, "at ", cell);
         }
         if (graph.toNumber(cell) === graph.toNumber(end)) {
           found = true
@@ -110,11 +101,9 @@ export class Dijkstra implements PathFindingAlgorithm {
     if (!prevCell) return [];
 
     graph.highlighightConnection(prevCell, end)
-    console.log("reconstructing path", prevCell);
+    console.log("reconstructing path");
 
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
-
-      console.log("reconstructing path", prevCell);
 
       graph.addPathCell(prevCell);
       path.push(prevCell);

@@ -15,21 +15,37 @@ export class Ui {
   clearBoard: p5.Element | null = null
   visual: p5.Element | null = null
 
+  // history control
+  prev: p5.Element | null = null
+  next: p5.Element | null = null
+
   constructor(p: p5) {
+
     const selectables = p.selectAll(".selectable-button")
-    const clearboard = p.select(".clear-board")
     const flag = p.selectAll(".selected-flag")
+
     const playButtons = p.selectAll(".play")
     const algorithm = p.selectAll("#algorithms");
     const visual = p.select("#visual")
+
+    const clearboard = p.select(".clear-board")
+    const prev = p.select("#prev")
+    const next = p.select("#next")
+
+
     if (!algorithm || !visual) return;
 
-    this.algorithm = algorithm;
     this.selectables = selectables
-    this.playButtons = playButtons
     this.flag = flag
-    this.clearBoard = clearboard;
+
+
+    this.playButtons = playButtons
     this.visual = visual
+    this.algorithm = algorithm;
+
+    this.clearBoard = clearboard;
+    this.prev = prev
+    this.next = next
 
     if (algorithm) {
       for (let selectors of this.algorithm) {
@@ -44,6 +60,16 @@ export class Ui {
     }
 
   }
+  handleHistory(update: Function) {
+    if (!this.prev || !this.next) return
+    this.prev.mouseClicked(() => {
+      update("prev")
+    })
+    this.next.mouseClicked(() => {
+      update("next")
+    })
+  }
+
   updateVisual(update: Function) {
     if (!this.visual) return
     this.visual?.changed(() => {

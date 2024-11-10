@@ -5,28 +5,30 @@ import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
 
-export class Gready implements PathFindingAlgorithm {
+export class Astar implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
+  private gScore: Map<number, number> = new Map(); // map(index,dist)
   private Pqueue: PQueue<Cell> = new PQueue();
   private previous: Map<number, Cell> = new Map();
 
   // Correctly defining the generator function
   *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
-    console.log("running greedy")
+    console.log("running A*")
 
     // clear prev data
     this.reset()
+    this.gScore = new Map(); // map(index,dist)
 
     this.visited.add(graph.toNumber(start));
-    this.Pqueue.enqueue(start, 0);
 
+    const hScore = graph.getWeight(start, end)
+    const fScore = 0 + hScore
+    this.Pqueue.enqueue(start, fScore);
+    this.gScore.set(graph.toNumber(start), 0)
     let found = false;
 
     while (!this.Pqueue.isEmpty() && !found) {
       const current = this.Pqueue.dequeue();
-      graph.currentScan = current
-
-
       if (!current) break;
 
       const neighbors = current.neighbors
@@ -34,26 +36,45 @@ export class Gready implements PathFindingAlgorithm {
         .filter((cell: Cell) => cell.type !== "obstacle")
         .filter((cell: Cell) => !this.visited.has(graph.toNumber(cell)));
 
+      this.visited.add(graph.toNumber(current));
 
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
 
-        const heuristic = graph.getWeight(end, cell)
+        const currentWeight = graph.getWeight(current, cell)
+        const runningWeight = currentWeight + this.gScore.get(graph.toNumber(current))
+        const prevWeight = this.gScore.get(graph.toNumber(cell))
 
-        let color: COLOR = colors.secondary as COLOR
+        let color: COLOR
+        let weight: number
 
-        this.Pqueue.enqueue(cell, heuristic);
-        this.visited.add(graph.toNumber(cell));
-        this.previous.set(graph.toNumber(cell), current)
+        if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
+          this.gScore.set(graph.toNumber(cell), runningWeight)
+          const hScore = graph.getWeight(cell, end)
 
+          const fScore = this.gScore.get(graph.toNumber(cell)) + hScore
+
+          color = colors.primary as COLOR
+          weight = fScore
+
+          this.previous.set(graph.toNumber(cell), current);
+          this.Pqueue.enqueue(cell, fScore)
+        }
+        else {
+
+          color = colors.secondary as COLOR
+          const hScore = graph.getWeight(cell, end)
+          weight = prevWeight + hScore
+        }
         if (graph.toNumber(cell) === graph.toNumber(end)) {
           found = true
           break
         }
 
         cell.highlight(color)
-        cell.text = heuristic.toFixed(1)
+        cell.text = weight.toFixed(1)
+        graph.currentScan = cell
 
         // Constructing the state to yield
         if (start && end) {
@@ -113,5 +134,4 @@ export class Gready implements PathFindingAlgorithm {
     return path;
   }
 }
-
 

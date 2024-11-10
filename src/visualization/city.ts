@@ -81,17 +81,22 @@ export class City implements Cell {
   show(p: p5) {
     p.push()
     if (this.addGlow) {
-      p.drawingContext.shadowColor = "red"
-      p.drawingContext.shadowBlur = 10
-      p.drawingContext.shadowColor = "yellow"
-      p.drawingContext.shadowBlur = 30
+      // p.drawingContext.shadowColor = "red"
+      // p.drawingContext.shadowBlur = 10
+      // p.drawingContext.shadowColor = "yellow"
+      // p.drawingContext.shadowBlur = 30
       p.drawingContext.shadowColor = "yellow"
       p.drawingContext.shadowBlur = 50
+      p.circle(this.location.x, this.location.y, this.radius)
+      p.circle(this.location.x, this.location.y, this.radius)
       p.circle(this.location.x, this.location.y, this.radius)
       p.circle(this.location.x, this.location.y, this.radius)
     }
     p.fill(this.color)
     p.circle(this.location.x, this.location.y, this.radius)
+    if (this.type == "highlight" || this.type == "path") {
+      this.showText(this.text, 15, p)
+    }
     p.pop()
     for (let neighbor of this.neighbors) {
       neighbor.arrow.show(p)
@@ -101,12 +106,14 @@ export class City implements Cell {
     return this.neighbors.filter(neighbor => neighbor.cell.name === name).pop()
   }
   showText(text: string, size: number, p: p5): void {
-    this.name = text
     p.push()
+
     p.fill("black")
+    p.stroke("white")
     p.textSize(size)
     p.textAlign(p.CENTER)
-    p.text(this.name, this.location.x, this.location.y)
+    p.text(text, this.location.x, this.location.y)
+
     p.pop()
   }
 

@@ -1,7 +1,8 @@
 import { ALGORITHMS, State } from "../type";
 import { BreadthFirst } from "../Algorithms/BreadthFirst";
 import { Dijkstra } from "../Algorithms/Dijkstra";
-import { Gready } from "../Algorithms/Gready.ts"
+import { Gready } from "../Algorithms/Gready"
+import { Astar } from "../Algorithms/A*"
 import { Graph } from "../dataStructures/Graph";
 import { Cell } from "./cell";
 export interface PathFindingAlgorithm {
@@ -11,6 +12,7 @@ export class Algorithms {
   static algorithms(algorithm: ALGORITHMS): PathFindingAlgorithm {
     switch (algorithm) {
       case "A* algorithms":
+        return new Astar()
       case "Dijkstra’s algorithm":
         return new Dijkstra();
       case "Maximum Flow algorithm":
