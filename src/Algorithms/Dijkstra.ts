@@ -2,13 +2,14 @@ import { COLOR, State } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { Queue } from "../dataStructures/Queue";
+import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
 
 export class Dijkstra implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
   private shortestDistance: Map<number, number> = new Map(); // map(index,dist)
-  private queue: Queue<Cell> = new Queue();
+  private Pqueue: PQueue<Cell> = new PQueue();
   private previous: Map<number, Cell> = new Map();
 
   // Correctly defining the generator function
@@ -16,18 +17,17 @@ export class Dijkstra implements PathFindingAlgorithm {
     console.log("running dijkstra")
 
     // clear prev data
-    this.visited = new Set();
-    this.queue = new Queue();
-    this.previous = new Map();
+    this.reset()
     this.shortestDistance = new Map(); // map(index,dist)
 
     this.visited.add(graph.toNumber(start));
-    this.queue.enqueue(start);
+    this.Pqueue.enqueue(start, 0);
     this.shortestDistance.set(graph.toNumber(start), 0)
     let found = false;
 
-    while (!this.queue.isEmpty() && !found) {
-      const current = this.queue.dequeue();
+    while (!this.Pqueue.isEmpty() && !found) {
+      // const current = this.queue.dequeue();
+      const current = this.Pqueue.dequeue();
       console.log(current, "current cell checking");
       if (!current) break;
 
@@ -52,13 +52,15 @@ export class Dijkstra implements PathFindingAlgorithm {
         let weight: number
 
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
-          this.previous.set(graph.toNumber(cell), current);
           this.shortestDistance.set(graph.toNumber(cell), runningWeight)
 
           color = colors.primary as COLOR
           weight = runningWeight
 
-          this.queue.enqueue(cell);
+          this.previous.set(graph.toNumber(cell), current);
+          // this.queue.enqueue(cell);
+          this.Pqueue.enqueue(cell, runningWeight)
+
           console.log("Found shortest", runningWeight, "at ", cell);
         }
         else {
@@ -98,7 +100,7 @@ export class Dijkstra implements PathFindingAlgorithm {
   }
   reset() {
     this.visited = new Set();
-    this.queue = new Queue();
+    this.Pqueue = new PQueue();
     this.previous = new Map();
 
   }
