@@ -9,7 +9,7 @@ export type ALGORITHMS =
   | "Minimum Spanning Tree"
   | "Breadth-First Search"
   | "Depth-First Search"
-  | "Greedy Best-First Search"
+  | "Greedy Best first algorithm"
   | "Bellman-Ford Algorithm"
   | "Floyd-Warshall Algorithm";
 export type COLOR = [number, number, number, number];

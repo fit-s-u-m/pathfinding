@@ -1,10 +1,11 @@
-import { ALGORITHMS, CELL, State } from "../type";
+import { ALGORITHMS, State } from "../type";
 import { BreadthFirst } from "../Algorithms/BreadthFirst";
 import { Dijkstra } from "../Algorithms/Dijkstra";
+import { Gready } from "../Algorithms/Gready.ts"
 import { Graph } from "../dataStructures/Graph";
 import { Cell } from "./cell";
 export interface PathFindingAlgorithm {
-  findPath: (grid: Graph, start: Cell, end: Cell) => Generator<State, CELL[]>;
+  findPath: (grid: Graph, start: Cell, end: Cell) => Generator<State, Cell[]>;
 }
 export class Algorithms {
   static algorithms(algorithm: ALGORITHMS): PathFindingAlgorithm {
@@ -17,7 +18,8 @@ export class Algorithms {
       case "Breadth-First Search":
         return new BreadthFirst();
       case "Depth-First Search":
-      case "Greedy Best-First Search":
+      case "Greedy Best first algorithm":
+        return new Gready()
       case "Bellman-Ford Algorithm":
       case "Floyd-Warshall Algorithm":
       default:
