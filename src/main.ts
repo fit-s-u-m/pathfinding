@@ -23,8 +23,9 @@ const drawing = (p: p5) => {
   let algorithm: PathFindingAlgorithm;
   let iterator: Iterator<State>
   let geoJson: any
+  let paused = false
   p.preload = () => {
-    geoJson = p.loadJSON("/map.geojson")
+    geoJson = p.loadJSON("/pathfinding/map.geojson")
   }
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
