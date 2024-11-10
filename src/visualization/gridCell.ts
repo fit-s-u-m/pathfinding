@@ -25,6 +25,10 @@ export class GridCell implements Cell {
   show(p: p5) {
     p.fill(this.color)
     p.square(this.location.x - this.cellSize / 2, this.location.y - this.cellSize / 2, this.cellSize)
+    if (this.type == "highlight")
+      this.showText(this.text, 15, p)
+    else if (this.type == "path")
+      this.showText(this.text, 17, p)
   }
   beNormal(): void {
     this.type = "normal"
@@ -59,14 +63,7 @@ export class GridCell implements Cell {
   getNeighbor(name: string) {
     return this.neighbors.filter(neighbor => neighbor.cell.name === name).pop()
   }
-
-  showText(text: string, size: number, p: p5) {
-    this.text = text
-    p.fill("black")
-    p.textAlign(p.CENTER)
-    p.textSize(size)
-    p.text(this.text, this.location.x, this.location.y)
-
+  showArrow(p: p5) {
     if (this.type != "obstacle") {
       for (let neighbor of this.neighbors) {
         if (neighbor.cell.type != "obstacle") {
@@ -77,6 +74,19 @@ export class GridCell implements Cell {
       }
 
     }
+
+  }
+
+  showText(text: string, size: number, p: p5) {
+    this.text = text
+    p.push()
+
+    p.fill("black")
+    p.textAlign(p.CENTER)
+    p.textSize(size)
+    p.text(this.text, this.location.x, this.location.y)
+
+    p.pop()
   }
 
 }
