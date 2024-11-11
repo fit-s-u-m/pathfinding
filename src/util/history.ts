@@ -1,34 +1,49 @@
-import { State } from "../type"
+import { ACTION } from "./action"
+import { Stack } from "../dataStructures/Stack"
 
 export class History {
-  private state: State[] = []
-  stateIndex = 0
-  historyLength = 100
-  saveState(state: State) {
-    this.state.unshift(state)
-    if (this.state.length > this.historyLength) this.state.pop()
+  private static instance: History | null = null
+
+  private undoStack: Stack<ACTION> = new Stack()
+  private redoStack: Stack<ACTION> = new Stack()
+
+  // Private constructor to prevent direct instantiation
+  private constructor() { }
+
+  // Static method to get the singleton instance
+  public static getInstance(): History {
+    if (!History.instance) {
+      History.instance = new History()
+    }
+    return History.instance
   }
-  getState() {
-    return this.state[this.stateIndex]
-  }
-  resetState() {
-    this.state.length = 0
+
+  saveState(action: ACTION) {
+    // console.log(action)
+    this.undoStack.push(action)
   }
   prev() {
-    if (this.state.length == 0 || this.stateIndex > this.state.length - 2) {
-      console.log("State reached the end or no state saved")
-      return
+    const action = this.undoStack.pop()
+    console.log(this.undoStack)
+    console.log(this.redoStack)
+    if (action) {
+      this.redoStack.push(action)
+      action.undo()
     }
-    return this.state[++this.stateIndex]
-  }
-  hasNext() {
-    return !(this.state.length == 0 || this.stateIndex < 1)
   }
   next() {
-    if (!this.hasNext()) {
-      console.log("State reached the present or no state saved")
-      return
+    const action = this.redoStack.pop()
+    console.log(this.undoStack)
+    console.log(this.redoStack)
+    if (action) {
+      this.undoStack.push(action)
+      action.do()
     }
-    return this.state[--this.stateIndex]
+  }
+  getPrevState() {
+    return this.undoStack.peek()
+  }
+  hasNext() {
+    return this.redoStack.size() > 0
   }
 }

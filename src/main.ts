@@ -13,7 +13,7 @@ Alpine.start()
 
 
 const app = document.getElementById("app");
-const history = new History();
+const history = History.getInstance()
 
 if (!app) throw new Error("App not found");
 
@@ -53,21 +53,16 @@ const drawing = (p: p5) => {
     p.clear()
     p.cursor(p.ARROW);
     graph.show(p);
-    if (p.mouseIsPressed) {
-      plantFlag()
-    }
-    if (iterator) {
+    if (iterator && !paused) {
       if (graph.start && graph.end) {
         let next = iterator.next();
 
         if (!next.done) {
-          history.saveState(next.value)
           next = iterator.next();
         }
       }
     }
     graph.onMouseHover(p.mouseX, p.mouseY, p)
-    // p.cursor(p.CROSS);
   };
   p.windowResized = () => {
     p.resizeCanvas(app.clientWidth, app.clientHeight);
@@ -79,18 +74,21 @@ const drawing = (p: p5) => {
       graph.addObstacle(p.mouseX, p.mouseY);
     }
   };
+  p.mousePressed = () => {
+    plantFlag()
+  }
   function handleHistory(action: "prev" | "next") {
     if (action === "prev") {
       if (!paused)
         paused = true
-      // history.prev()
+      history.prev()
     }
     else {
-      // if (history.hasNext())
-      //   history.next()
-      // else {
-      //   // play()
-      // }
+      if (history.hasNext())
+        history.next()
+      else {
+        paused = false
+      }
     }
   }
   const plantFlag = () => {
@@ -98,6 +96,7 @@ const drawing = (p: p5) => {
     if (selected === "obstacle") {
       graph.addObstacle(p.mouseX, p.mouseY);
     } else if (selected === "start") {
+      console.log("plant flag")
       graph.setStart(p.mouseX, p.mouseY);
     } else if (selected === "end") {
       graph.setEnd(p.mouseX, p.mouseY);

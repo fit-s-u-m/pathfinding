@@ -4,6 +4,10 @@ import { Graph } from "../dataStructures/Graph";
 import { GridCell } from "./gridCell";
 import { Arrow } from "./arrow";
 
+import { Action, ComposedAction } from "../util/action";
+import { History } from "../util/history";
+import { ArrowType, CellType, COLOR } from "../type";
+
 export class Grid implements Graph {
   canvasWidth: number;
   canvasHeight: number;
@@ -172,31 +176,69 @@ export class Grid implements Graph {
 
   addObstacle(x: number, y: number) {
     const cell = this.getCell(x, y)
-    if (cell)
-      cell.beObstacle()
+    if (cell && cell.type != "obstacle") {
+      const undo = (prevColor: COLOR, prevType: CellType) => {
+        cell.type = prevType
+        cell.color = prevColor
+      }
+      const action = new Action(cell.beObstacle.bind(cell), undo.bind(cell, cell.color, cell.type))
+      action.do()
+      History.getInstance().saveState(action)
+    }
   }
-  addPathCell(cell: Cell): void {
-    this.algorithsmPathCells.push(cell as GridCell)
-    cell.beInPath()
+  addPathCell(cell: GridCell): void {
+    this.algorithsmPathCells.push(cell)
+
+    const undo = (prevColor: COLOR, prevType: CellType) => {
+      cell.type = prevType
+      cell.color = prevColor
+    }
+    const action = new Action(cell.beInPath.bind(cell), undo.bind(cell, cell.color, cell.type))
+    action.do()
+    History.getInstance().saveState(action)
   }
   setStart(x: number, y: number) {
     const cell = this.getCell(x, y)
     if (cell) {
-      if (this.start) {
-        this.start.beNormal()
+      const doFunc = (cell: GridCell) => {
+        if (this.start)
+          this.start.beNormal()
+        cell.beStart()
+        this.start = cell
       }
-      cell.beStart()
-      this.start = cell
+      const undoFunc = (cell: GridCell, prevStart: GridCell | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
+        if (prevStart)
+          prevStart.beStart()
+        cell.type = cellPrevType
+        cell.color = cellPrevColor
+        this.start = prevStart
+      }
+
+      const action = new Action(doFunc.bind(this, cell), undoFunc.bind(this, cell, this.start, cell.type, cell.color))
+      action.do()
+      History.getInstance().saveState(action)
     }
   }
   setEnd(x: number, y: number) {
     const cell = this.getCell(x, y)
     if (cell) {
-      if (this.end) {
-        this.end.beNormal()
+      const doFunc = (cell: GridCell) => {
+        if (this.end)
+          this.end.beNormal()
+        cell.beEnd()
+        this.end = cell
       }
-      cell.beEnd()
-      this.end = cell
+      const undoFunc = (cell: GridCell, prevEnd: GridCell | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
+        if (prevEnd)
+          prevEnd.beEnd()
+        cell.type = cellPrevType
+        cell.color = cellPrevColor
+        this.end = prevEnd
+      }
+
+      const action = new Action(doFunc.bind(this, cell), undoFunc.bind(this, cell, this.end, cell.type, cell.color))
+      action.do()
+      History.getInstance().saveState(action)
     }
   }
 
@@ -209,22 +251,64 @@ export class Grid implements Graph {
   }
 
   clearGraph(): void {
+    const composedAction = new ComposedAction()
     for (let cell of this.cells.values()) {
-      cell.beNormal()
+
+      let action: Action
+      if (cell.type == "end") {
+        const unDoFunc = () => {
+          cell.beEnd()
+          this.end = cell
+        }
+        action = new Action(cell.beNormal.bind(cell), unDoFunc.bind(cell))
+      }
+      else if (cell.type == "start") {
+        const unDoFunc = () => {
+          cell.beStart()
+          this.start = cell
+        }
+        action = new Action(cell.beNormal.bind(cell), unDoFunc.bind(cell))
+      }
+      else {
+        const unDoFunc = (prevColor: COLOR, prevType: CellType) => {
+          cell.type = prevType
+          cell.color = prevColor
+        }
+        action = new Action(cell.beNormal.bind(cell), unDoFunc.bind(cell, cell.color, cell.type))
+      }
+
+      composedAction.addAction(action)
     }
+    composedAction.do()
+    History.getInstance().saveState(composedAction)
     this.start = null
     this.end = null
     this.currentScan = null
     this.algorithsmPathCells = []
   }
   clearHighlight(): void {
+    const composedAction = new ComposedAction()
+
     for (let cell of this.cells.values()) {
-      if (cell.type == "highlight" || cell.type == "path")
-        cell.beNormal()
+      if (cell.type == "highlight" || cell.type == "path") {
+        const unDoFunc = (prevColor: COLOR, prevType: CellType) => {
+          cell.type = prevType
+          cell.color = prevColor
+        }
+        const action = new Action(cell.beNormal.bind(cell), unDoFunc.bind(cell, cell.color, cell.type))
+        composedAction.addAction(action)
+      }
     }
     for (let arrow of this.highlightedArrows) {
-      arrow.beNormal()
+      const unDoFunc = (prevColor: COLOR, prevType: ArrowType) => {
+        arrow.arrowType = prevType
+        arrow.color = prevColor
+      }
+      const action = new Action(arrow.beNormal.bind(arrow), unDoFunc.bind(arrow, arrow.color, arrow.arrowType))
+      composedAction.addAction(action)
     }
+    composedAction.do()
+    History.getInstance().saveState(composedAction)
   }
   highlighightConnection(start: GridCell, end: GridCell): void {
     const arrow = start.getNeighbor(end.name)?.arrow

@@ -3,6 +3,8 @@ import { CellType, COLOR } from "../type"
 import { Cell } from "../util/cell"
 import { colors } from "../util/colors"
 import { Arrow } from "./arrow"
+import { History } from "../util/history"
+import { Action } from "../util/action"
 
 export class GridCell implements Cell {
   location: { x: number, y: number }
@@ -52,8 +54,18 @@ export class GridCell implements Cell {
     this.color = colors.path_grid as COLOR
   }
   highlight(color: COLOR) {
-    this.type = "highlight"
-    this.color = color
+    if (this.type == "highlight" && this.color == color) return
+    const undo = (prevType: CellType, prevColor: COLOR) => {
+      this.type = prevType
+      this.color = prevColor
+    }
+    const highlight = (color: COLOR) => {
+      this.type = "highlight"
+      this.color = color
+    }
+    const action = new Action(highlight.bind(this, color), undo.bind(this, this.type, this.color))
+    action.do()
+    History.getInstance().saveState(action)
   }
   isInCell(x: number, y: number) {
     const xBound = x - this.location.x > 0 && x - this.location.x < this.cellSize
