@@ -31,7 +31,7 @@ const drawing = (p: p5) => {
     p.createCanvas(app.clientWidth, app.clientHeight);
     ui = new Ui(p);
     ui.updateFlag()  // label the selected flag
-    ui.updatePlayButton(updatePlay) // contol the play button
+    ui.updateRun(updatePlay) // contol the play button
     ui.clearBoardButton(clearBoard)
     ui.updateAlgorithm(updateAlgorithm)
     ui.handleHistory(handleHistory)

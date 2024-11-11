@@ -5,15 +5,15 @@ export class Ui {
   selectedAlgorithm: ALGORITHMS = "Breadth-First Search";
   selectedVisual: "Grid" | "Map" = "Grid"
 
-  algorithm: p5.Element[] | null = null;
-  selectables: p5.Element[] | null = null;
-  flag: p5.Element[] | null = null;
+  algorithm: p5.Element | null = null;
+  algorithmMobile: p5.Element | null = null;
+  flags: p5.Element[] | null = null;
 
-  playButtons: p5.Element[] | null = null
-  isPlay: boolean = false
+  runButton: p5.Element[] | null = null
 
   clearBoard: p5.Element | null = null
   visual: p5.Element | null = null
+  visualMobile: p5.Element | null = null
 
   // history control
   prev: p5.Element | null = null
@@ -22,11 +22,13 @@ export class Ui {
   constructor(p: p5) {
 
     const selectables = p.selectAll(".selectable-button")
-    const flag = p.selectAll(".selected-flag")
 
-    const playButtons = p.selectAll(".play")
-    const algorithm = p.selectAll("#algorithms");
+    const runButtons = p.selectAll(".play")
+
+    const algorithm = p.select("#algorithms");
     const visual = p.select("#visual")
+    const algorithmMobile = p.select("#algorithms-mobile");
+    const visualMobile = p.select("#visual-mobile")
 
     const clearboard = p.select(".clear-board")
     const prev = p.select("#prev")
@@ -35,30 +37,25 @@ export class Ui {
 
     if (!algorithm || !visual) return;
 
-    this.selectables = selectables
-    this.flag = flag
+    this.flags = selectables
 
 
-    this.playButtons = playButtons
+    this.runButton = runButtons
+
     this.visual = visual
     this.algorithm = algorithm;
+
+    this.visualMobile = visualMobile
+    this.algorithmMobile = algorithmMobile
 
     this.clearBoard = clearboard;
     this.prev = prev
     this.next = next
 
-    if (algorithm) {
-      for (let selectors of this.algorithm) {
-        const selectedAlgorithm = selectors.elt.value
-        if (selectedAlgorithm) {
-          this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS
-        }
-      }
-    }
-    if (visual) {
-      this.selectedVisual = visual.elt.value as "Grid" | "Map"
-    }
+    const selectedAlgorithm = algorithm.elt.value
+    this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS
 
+    this.selectedVisual = this.visual.elt.value as "Grid" | "Map";
   }
   handleHistory(update: Function) {
     if (!this.prev || !this.next) return
@@ -71,13 +68,26 @@ export class Ui {
   }
 
   updateVisual(update: Function) {
-    if (!this.visual) return
-    this.visual.elt.addEventListener('change', () => {
+    if (!this.visual || !this.visualMobile) return
+    this.visual.elt.addEventListener("change", () => {
       if (!this.visual || !this.selectedVisual) return;
       this.selectedVisual = this.visual.elt.value as "Grid" | "Map";
-      console.log(this.visual.value());
+      if (this.visualMobile)
+        this.visualMobile.elt.value = this.selectedVisual
+      console.log(this.selectedVisual)
       update(this.selectedVisual);
-    });
+
+    })
+
+    this.visualMobile.elt.addEventListener("change", () => {
+      if (!this.visualMobile || !this.selectedVisual) return;
+      this.selectedVisual = this.visualMobile.elt.value as "Grid" | "Map";
+      if (this.visual)
+        this.visual.elt.value = this.selectedVisual  // update the other when one change
+      console.log(this.selectedVisual)
+      update(this.selectedVisual);
+
+    })
   }
   clearBoardButton(update: Function) {
     if (!this.clearBoard) return
@@ -86,29 +96,38 @@ export class Ui {
     })
   }
   updateAlgorithm(update: Function) {
-    if (!this.algorithm) return;
-    for (let selectors of this.algorithm) {
-      selectors.elt.addEventListener('change', () => {
-        const selectedAlgorithm = selectors.elt.value;
-        if (selectedAlgorithm) {
-          this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS;
-          update(this.selectedAlgorithm);
-        }
-      });
-    }
+    this.algorithm?.elt.addEventListener("change", () => {
+      if (!this.algorithm || !this.selectedAlgorithm) return;
+      this.selectedAlgorithm = this.algorithm.elt.value as ALGORITHMS
+      if (this.algorithmMobile)
+        this.algorithmMobile.elt.value = this.selectedAlgorithm
+      console.log(this.selectedAlgorithm)
+      update(this.selectedAlgorithm);
+
+    })
+
+    this.algorithmMobile?.elt.addEventListener("change", () => {
+      if (!this.algorithmMobile || !this.selectedAlgorithm) return;
+      this.selectedAlgorithm = this.algorithmMobile.elt.value as ALGORITHMS
+      if (this.algorithm)
+        this.algorithm.elt.value = this.selectedAlgorithm  // update the other when one change
+      console.log(this.selectedAlgorithm)
+      update(this.selectedAlgorithm);
+
+    })
   }
   updateFlag() {
-    if (!this.selectables) return
-    for (let buttons of this.selectables) {
+    if (!this.flags) return
+    for (let buttons of this.flags) {
       buttons.mouseClicked(() => {
-        this.selectedFlag = buttons.elt.dataset.value
         console.log(this.selectedFlag)
+        this.selectedFlag = buttons.elt.dataset.value
       })
     }
   }
-  updatePlayButton(update: Function) {
-    if (!this.playButtons) return
-    this.playButtons.forEach((button) => {
+  updateRun(update: Function) {
+    if (!this.runButton) return
+    this.runButton.forEach((button) => {
       button.mouseClicked(() => {
         update()
       })
