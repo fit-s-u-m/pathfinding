@@ -5,9 +5,9 @@ import { ALGORITHMS, State } from "./type";
 import { Algorithms, PathFindingAlgorithm } from "./util/pathFindingAlgorithms";
 import { History } from "./util/history";
 import { Country } from "./visualization/map";
+import { Graph } from "./dataStructures/Graph";
 
 import Alpine from 'alpinejs'
-import { Graph } from "./dataStructures/Graph";
 window.Alpine = Alpine
 Alpine.start()
 
@@ -34,6 +34,7 @@ const drawing = (p: p5) => {
     ui.updatePlayButton(updatePlay) // contol the play button
     ui.clearBoardButton(clearBoard)
     ui.updateAlgorithm(updateAlgorithm)
+    ui.handleHistory(handleHistory)
     ui.updateVisual(updateVisual)
     console.log(ui.selectedVisual)
 
@@ -45,8 +46,8 @@ const drawing = (p: p5) => {
 
     }
     graph.createNeighbors()
-
     algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
+
   };
   p.draw = () => {
     p.clear()
@@ -60,7 +61,7 @@ const drawing = (p: p5) => {
         let next = iterator.next();
 
         if (!next.done) {
-          history.saveState(next.value); // Save the state
+          history.saveState(next.value)
           next = iterator.next();
         }
       }
@@ -78,6 +79,20 @@ const drawing = (p: p5) => {
       graph.addObstacle(p.mouseX, p.mouseY);
     }
   };
+  function handleHistory(action: "prev" | "next") {
+    if (action === "prev") {
+      if (!paused)
+        paused = true
+      // history.prev()
+    }
+    else {
+      // if (history.hasNext())
+      //   history.next()
+      // else {
+      //   // play()
+      // }
+    }
+  }
   const plantFlag = () => {
     const selected = ui.selectedFlag;
     if (selected === "obstacle") {

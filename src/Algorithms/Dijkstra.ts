@@ -41,7 +41,7 @@ export class Dijkstra implements PathFindingAlgorithm {
 
 
         const currentWeight = graph.getWeight(current, cell)
-        const runningWeight = currentWeight + this.shortestDistance.get(graph.toNumber(current))
+        const runningWeight = currentWeight + (this.shortestDistance.get(graph.toNumber(current)) || 0)
         const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
         let color: COLOR

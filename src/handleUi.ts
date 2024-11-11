@@ -72,14 +72,12 @@ export class Ui {
 
   updateVisual(update: Function) {
     if (!this.visual) return
-    this.visual?.changed(() => {
-      if (!this.visual || !this.selectedVisual) return
-      this.selectedVisual = this.visual.elt.value as "Grid" | "Map"
-      console.log(this.visual.value())
-      update(this.selectedVisual)
-
-    })
-
+    this.visual.elt.addEventListener('change', () => {
+      if (!this.visual || !this.selectedVisual) return;
+      this.selectedVisual = this.visual.elt.value as "Grid" | "Map";
+      console.log(this.visual.value());
+      update(this.selectedVisual);
+    });
   }
   clearBoardButton(update: Function) {
     if (!this.clearBoard) return
@@ -88,16 +86,15 @@ export class Ui {
     })
   }
   updateAlgorithm(update: Function) {
-    if (!this.algorithm) return
+    if (!this.algorithm) return;
     for (let selectors of this.algorithm) {
-      selectors.changed(() => {
-        const selectedAlgorithm = selectors.elt.value
+      selectors.elt.addEventListener('change', () => {
+        const selectedAlgorithm = selectors.elt.value;
         if (selectedAlgorithm) {
-          this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS
-          update(this.selectedAlgorithm)
+          this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS;
+          update(this.selectedAlgorithm);
         }
-
-      })
+      });
     }
   }
   updateFlag() {

@@ -56,6 +56,7 @@ export class Arrow {
     p.translate(startX, startY)
     p.rotate(angle)
     p.textSize(size)
+    p.fill(color)
     p.stroke("black")
     p.noFill()
     p.textAlign(p.CENTER)
@@ -81,7 +82,7 @@ export class Arrow {
 
   }
   showHighlight(p: p5) {
-    const alpha = p.map(this.weight, 0, 1, 200, 0)
+    // const alpha = p.map(this.weight, 0, 1, 200, 0)
     let color = colors.accent.slice(0, 3) as number[]
     const thickness = p.map(this.weight, 0, 1, 5, 0)
 

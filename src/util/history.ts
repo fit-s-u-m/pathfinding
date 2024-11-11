@@ -1,4 +1,4 @@
-import { State } from "./types"
+import { State } from "../type"
 
 export class History {
   private state: State[] = []
@@ -21,8 +21,11 @@ export class History {
     }
     return this.state[++this.stateIndex]
   }
+  hasNext() {
+    return !(this.state.length == 0 || this.stateIndex < 1)
+  }
   next() {
-    if (this.state.length == 0 || this.stateIndex < 1) {
+    if (!this.hasNext()) {
       console.log("State reached the present or no state saved")
       return
     }

@@ -43,7 +43,7 @@ export class Astar implements PathFindingAlgorithm {
 
 
         const currentWeight = graph.getWeight(current, cell)
-        const runningWeight = currentWeight + this.gScore.get(graph.toNumber(current))
+        const runningWeight = currentWeight + (this.gScore.get(graph.toNumber(current)) || 0)
         const prevWeight = this.gScore.get(graph.toNumber(cell))
 
         let color: COLOR
@@ -53,7 +53,7 @@ export class Astar implements PathFindingAlgorithm {
           this.gScore.set(graph.toNumber(cell), runningWeight)
           const hScore = graph.getWeight(cell, end)
 
-          const fScore = this.gScore.get(graph.toNumber(cell)) + hScore
+          const fScore = (this.gScore.get(graph.toNumber(cell)) || 0) + hScore
 
           color = colors.primary as COLOR
           weight = fScore
