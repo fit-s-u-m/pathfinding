@@ -1,15 +1,19 @@
-import { State } from "../type";
+import { COLOR } from "../type";
+import { colors } from "../util/colors";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { Queue } from "../dataStructures/Queue";
 import { Graph } from "../dataStructures/Graph";
 import { Cell } from "../util/cell";
+
+import { History } from "../util/history";
+import { ComposedAction } from "../util/action";
 
 export class BreadthFirst implements PathFindingAlgorithm {
   visited: Set<number> = new Set();
   queue: Queue<Cell> = new Queue();
   previous: Map<number, Cell> = new Map();
 
-  *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
+  *findPath(graph: Graph, start: Cell, end: Cell): Generator<void> {
     console.log("running breadthFirst")
 
     // clear prev data
@@ -30,6 +34,13 @@ export class BreadthFirst implements PathFindingAlgorithm {
         .filter((cell: Cell) => cell.type !== "obstacle")
         .filter((cell: Cell) => !this.visited.has(graph.toNumber(cell)));
 
+      const composedAction = new ComposedAction();
+
+      if (current !== start) {
+        const action = current.highlight(colors.secondary as COLOR)
+        composedAction.addAction(action)
+      }
+
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
@@ -37,27 +48,19 @@ export class BreadthFirst implements PathFindingAlgorithm {
         this.queue.enqueue(cell);
         this.previous.set(graph.toNumber(cell), current);
 
-        // console.log("neighbors of ", current, " is ", cell);
         if (graph.toNumber(cell) === graph.toNumber(end)) {
           found = true
           break
         }
-
-        cell.highlight([198, 199, 196, 255]);// FIXME: show them as progress
+        const color = colors.primary as COLOR
         cell.text = graph.getWeight(current, cell).toFixed(1)
 
-        // Constructing the state to yield
-        const state: State = {
-          start,
-          end,
-          obstacles: graph.getObstacles(),
-          highlightCell: graph.getHighlights(),
-          algorithsmPathCells: graph.algorithsmPathCells,
-        };
+        const action = cell.highlight(color)
+        composedAction.addAction(action)
 
-        yield state;
-
+        yield;
       }
+      History.getInstance().saveState(composedAction)
     }
 
     // At the end of the pathfinding, reconstruct the path
@@ -75,30 +78,32 @@ export class BreadthFirst implements PathFindingAlgorithm {
     let prevCell = this.previous.get(graph.toNumber(end));
     let path: Cell[] = [];
     if (!prevCell) return [];
-    graph.highlighightConnection(prevCell, end)
+    const composedAction = new ComposedAction();
+    const action = graph.highlighightConnection(prevCell, end)
+    composedAction.addAction(action)
 
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
-      graph.addPathCell(prevCell);
+
+      const action = graph.addPathCell(prevCell);
+      composedAction.addAction(action)
+
       path.push(prevCell);
 
       if (start && end) {
-        const state: State = {
-          start,
-          end,
-          obstacles: graph.getObstacles(),
-          highlightCell: graph.getHighlights(),
-          algorithsmPathCells: graph.algorithsmPathCells,
-        };
-
-        yield state;
+        yield;
       }
       const nextCell = this.previous.get(graph.toNumber(prevCell));
-      if (nextCell)
-        graph.highlighightConnection(nextCell, prevCell)
+      if (nextCell) {
+        const action = graph.highlighightConnection(nextCell, prevCell)
+        composedAction.addAction(action)
+      }
       prevCell = nextCell
     }
-    if (prevCell)
-      graph.highlighightConnection(start, prevCell)
+    if (prevCell) {
+      const action = graph.highlighightConnection(start, prevCell)
+      composedAction.addAction(action)
+    }
+    History.getInstance().saveState(composedAction)
     path.push(start);
     return path;
   }

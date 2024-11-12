@@ -26,46 +26,46 @@ export class GridCell implements Cell {
   }
   show(p: p5) {
     p.fill(this.color)
-    p.square(this.location.x - this.cellSize / 2, this.location.y - this.cellSize / 2, this.cellSize)
+    p.stroke(colors.secondary)
+    const borderRad = this.cellSize / 4
+    p.square(this.location.x - this.cellSize / 2, this.location.y - this.cellSize / 2, this.cellSize, borderRad)
+    const textSize = p.map(this.cellSize, 0, 50, 2, 20) // TODO: adjust text size
     if (this.type == "highlight")
-      this.showText(this.text, 15, p)
+      this.showText(this.text, textSize, p)
     else if (this.type == "path")
-      this.showText(this.text, 17, p)
+      this.showText(this.text, textSize, p)
   }
+  private setState(type: CellType, color: COLOR): void {
+    this.type = type;
+    this.color = color;
+  }
+
   beNormal(): void {
-    this.type = "normal"
-    this.color = colors.background as COLOR
+    this.setState("normal", colors.background as COLOR);
   }
 
   beStart(): void {
-    this.type = "start"
-    this.color = colors.start as COLOR
+    this.setState("start", colors.start as COLOR);
   }
+
   beEnd(): void {
-    this.type = "end"
-    this.color = colors.end as COLOR
+    this.setState("end", colors.end as COLOR);
   }
+
   beObstacle(): void {
-    this.type = "obstacle"
-    this.color = colors.obstacle as COLOR
+    this.setState("obstacle", colors.obstacle as COLOR);
   }
+
   beInPath(): void {
-    this.type = "path"
-    this.color = colors.path_grid as COLOR
+    this.setState("path", colors.path_grid as COLOR);
   }
-  highlight(color: COLOR) {
-    if (this.type == "highlight" && this.color == color) return
-    const undo = (prevType: CellType, prevColor: COLOR) => {
-      this.type = prevType
-      this.color = prevColor
-    }
-    const highlight = (color: COLOR) => {
-      this.type = "highlight"
-      this.color = color
-    }
-    const action = new Action(highlight.bind(this, color), undo.bind(this, this.type, this.color))
+  highlight(color: COLOR): Action {
+    // if (this.type == "highlight" && this.color == color) return
+    const doHighlight = (color: COLOR) => this.setState("highlight", color);
+    const undoHighlight = (prevType: CellType, prevColor: COLOR) => this.setState(prevType, prevColor);
+    const action = new Action(doHighlight.bind(this, color), undoHighlight.bind(this, this.type, this.color))
     action.do()
-    History.getInstance().saveState(action)
+    return action
   }
   isInCell(x: number, y: number) {
     const xBound = x - this.location.x > 0 && x - this.location.x < this.cellSize
@@ -84,16 +84,14 @@ export class GridCell implements Cell {
           neighbor.arrow.drawDistance(p, neighbor.weight.toFixed(1), size)
         }
       }
-
     }
-
   }
 
   showText(text: string, size: number, p: p5) {
     this.text = text
     p.push()
 
-    p.fill("black")
+    p.fill(colors.text)
     p.textAlign(p.CENTER)
     p.textSize(size)
     p.text(this.text, this.location.x, this.location.y)

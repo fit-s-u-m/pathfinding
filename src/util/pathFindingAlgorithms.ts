@@ -6,13 +6,13 @@ import { Astar } from "../Algorithms/A*"
 import { Graph } from "../dataStructures/Graph";
 import { Cell } from "./cell";
 export interface PathFindingAlgorithm {
-  findPath: (grid: Graph, start: Cell, end: Cell) => Generator<State, Cell[]>;
+  findPath: (grid: Graph, start: Cell, end: Cell) => Generator<void, Cell[]>;
 }
 export class Algorithms {
   static algorithms(algorithm: ALGORITHMS): PathFindingAlgorithm {
     switch (algorithm) {
       case "A* algorithms":
-        return new Astar()
+      // return new Astar()
       case "Dijkstra’s algorithm":
         return new Dijkstra();
       case "Maximum Flow algorithm":
@@ -21,7 +21,7 @@ export class Algorithms {
         return new BreadthFirst();
       case "Depth-First Search":
       case "Greedy Best first algorithm":
-        return new Gready()
+      // return new Gready()
       case "Bellman-Ford Algorithm":
       case "Floyd-Warshall Algorithm":
       default:

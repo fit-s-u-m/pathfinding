@@ -3,6 +3,7 @@ import { CellType, CityData, COLOR } from "../type";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
 import { Arrow } from "./arrow";
+import { Action } from "../util/action";
 
 export class City implements Cell {
   name: string
@@ -15,6 +16,7 @@ export class City implements Cell {
   neighbors: { cell: Cell, weight: number, arrow: Arrow }[] = []
   type: CellType = "normal"
   text: string = ""
+  textSize: number = 20
   addGlow: boolean = false
 
   constructor(data: CityData, project: Function) {
@@ -44,12 +46,10 @@ export class City implements Cell {
   beInPath(): void {
     this.type = "path"
     this.color = colors.path as COLOR
-    this.addGlow = true
   }
   beNormal(): void {
     this.type = "normal"
     this.color = colors.background as COLOR
-    this.addGlow = false
   }
 
 
@@ -59,32 +59,36 @@ export class City implements Cell {
   getType() {
     return this.type
   }
-  highlight(color: COLOR): void {
-    this.color = color
-    this.type = "highlight"
+  highlight(color: COLOR): Action {
+    const beHighlight = (color: COLOR) => {
+      this.color = color
+      this.type = "highlight"
+    }
+    const action = new Action(beHighlight.bind(this, color), this.beNormal.bind(this))
+    action.do()
+    return action
   }
   highlightArrow(p: p5) {
     this.neighbors.forEach(neighbor => {
       neighbor.arrow.showHighlight(p)
     })
   }
-  showDistance(getDistance: Function, p: p5) {
+  showDistance(p: p5, getDistance: Function, size: number) {
     this.neighbors.forEach(neighbor => {
       const distance = getDistance(neighbor.cell, this) as number
-      const size = 20
       neighbor.arrow.drawDistance(p, distance.toFixed(0), size, colors.accent as COLOR)
     })
   }
   isInCell(x: number, y: number) {
     return Math.sqrt((x - this.location.x) ** 2 + (y - this.location.y) ** 2) <= this.radius
   }
+  foucus(p: p5) {
+    p.fill(colors.background)
+    p.circle(this.location.x, this.location.y, this.radius)
+  }
   show(p: p5) {
     p.push()
-    if (this.addGlow) {
-      // p.drawingContext.shadowColor = "red"
-      // p.drawingContext.shadowBlur = 10
-      // p.drawingContext.shadowColor = "yellow"
-      // p.drawingContext.shadowBlur = 30
+    if (this.type == "path") {
       p.drawingContext.shadowColor = "yellow"
       p.drawingContext.shadowBlur = 50
       p.circle(this.location.x, this.location.y, this.radius)
@@ -95,7 +99,8 @@ export class City implements Cell {
     p.fill(this.color)
     p.circle(this.location.x, this.location.y, this.radius)
     if (this.type == "highlight" || this.type == "path") {
-      this.showText(this.text, 15, p)
+      const textSize = p.map(this.radius, 0, 50, 2, 20) // TODO: adjust text size
+      this.showText(this.text, textSize, p)
     }
     p.pop()
     for (let neighbor of this.neighbors) {
@@ -108,7 +113,7 @@ export class City implements Cell {
   showText(text: string, size: number, p: p5): void {
     p.push()
 
-    p.fill("black")
+    p.fill(colors.text as COLOR)
     p.stroke("white")
     p.textSize(size)
     p.textAlign(p.CENTER)

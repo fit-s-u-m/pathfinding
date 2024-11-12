@@ -1,6 +1,7 @@
 import p5 from "p5"
 import { CellType, COLOR } from "../type"
 import { Arrow } from "../visualization/arrow"
+import { Action } from "./action"
 
 export interface Cell {
   location: { x: number, y: number }
@@ -20,6 +21,6 @@ export interface Cell {
   isInCell(x: number, y: number): void
 
   showText(text: string, size: number, p: p5): void
-  highlight(color: COLOR): void
+  highlight(color: COLOR): Action
 
 }

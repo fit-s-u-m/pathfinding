@@ -5,6 +5,10 @@ import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
 
+import { History } from "../util/history";
+import { ComposedAction } from "../util/action";
+import { Grid } from "../visualization/grid";
+
 export class Dijkstra implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
   private shortestDistance: Map<number, number> = new Map(); // map(index,dist)
@@ -12,7 +16,7 @@ export class Dijkstra implements PathFindingAlgorithm {
   private previous: Map<number, Cell> = new Map();
 
   // Correctly defining the generator function
-  *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
+  *findPath(graph: Graph, start: Cell, end: Cell): Generator<void> {
     console.log("running dijkstra")
 
     // clear prev data
@@ -36,6 +40,13 @@ export class Dijkstra implements PathFindingAlgorithm {
 
       this.visited.add(graph.toNumber(current));
 
+      const composedAction = new ComposedAction();
+
+      if (graph.toNumber(current) !== graph.toNumber(start)) {
+        const action = current.highlight(colors.accent as COLOR)
+        composedAction.addAction(action)
+      }
+
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
@@ -44,45 +55,44 @@ export class Dijkstra implements PathFindingAlgorithm {
         const runningWeight = currentWeight + (this.shortestDistance.get(graph.toNumber(current)) || 0)
         const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
-        let color: COLOR
-        let weight: number
 
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
           this.shortestDistance.set(graph.toNumber(cell), runningWeight)
 
-          color = colors.primary as COLOR
-          weight = runningWeight
+          const color = colors.primary as COLOR
+          const weight = runningWeight
 
           this.previous.set(graph.toNumber(cell), current);
           this.Pqueue.enqueue(cell, runningWeight)
 
+          if (graph.toNumber(cell) === graph.toNumber(end)) {
+            found = true
+            break
+          }
+
+          cell.text = weight.toFixed(1)
+          const action = cell.highlight(color)
+          composedAction.addAction(action)
+
         }
         else {
-          color = colors.secondary as COLOR
-          weight = prevWeight
-        }
-        if (graph.toNumber(cell) === graph.toNumber(end)) {
-          found = true
-          break
+          const color = colors.secondary as COLOR
+          const weight = prevWeight
+          if (graph.toNumber(cell) === graph.toNumber(end)) {
+            found = true
+            break
+          }
+
+          cell.text = weight.toFixed(1)
+          const action = cell.highlight(color)
+          composedAction.addAction(action)
         }
 
-        cell.highlight(color)
-        cell.text = weight.toFixed(1)
         graph.currentScan = cell
 
-        // Constructing the state to yield
-        if (start && end) {
-          const state: State = {
-            start,
-            end,
-            obstacles: graph.getObstacles(),
-            highlightCell: graph.getHighlights(),
-            algorithsmPathCells: graph.algorithsmPathCells,
-          };
-
-          yield state;
-        }
+        yield;
       }
+      History.getInstance().saveState(composedAction)
     }
 
     // At the end of the pathfinding, reconstruct the path
@@ -100,31 +110,31 @@ export class Dijkstra implements PathFindingAlgorithm {
     let path: Cell[] = [];
     if (!prevCell) return [];
 
-    graph.highlighightConnection(prevCell, end)
-    console.log("reconstructing path");
+    const composedAction = new ComposedAction();
+    const action = graph.highlighightConnection(prevCell, end)
+    composedAction.addAction(action)
 
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
 
-      graph.addPathCell(prevCell);
-      path.push(prevCell);
-      const state: State = {
-        start,
-        end,
-        obstacles: graph.getObstacles(),
-        highlightCell: graph.getHighlights(),
-        algorithsmPathCells: graph.algorithsmPathCells,
-      };
+      const action = graph.addPathCell(prevCell);
+      composedAction.addAction(action)
 
-      yield state;
+      path.push(prevCell);
+      yield;
       const nextCell = this.previous.get(graph.toNumber(prevCell));
-      if (nextCell)
-        graph.highlighightConnection(nextCell, prevCell)
+      if (nextCell) {
+        const action = graph.highlighightConnection(nextCell, prevCell)
+        composedAction.addAction(action)
+      }
       prevCell = nextCell
     }
 
-    if (prevCell)
-      graph.highlighightConnection(start, prevCell)
+    if (prevCell) {
+      const action = graph.highlighightConnection(start, prevCell)
+      composedAction.addAction(action)
+    }
     path.push(start);
+    History.getInstance().saveState(composedAction)
     return path;
   }
 }
