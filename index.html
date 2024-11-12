@@ -75,17 +75,17 @@
         <li class="flex flex-row gap-5 items-center">
           <button data-value="start" @click="selected='start'"
             :class="selected =='start'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color'  "
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap hover:bg-primary-color hover:text-secondary-color focus:bg-primary-color focus:text-secondary-color ">
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap hover:bg-black hover:text-white focus:bg-primary-color focus:text-secondary-color ">
             <span>Start</span>
           </button>
           <button data-value="obstacle" @click="selected='obstacle'"
             :class="selected == 'obstacle'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-black hover:text-white  focus:bg-primary-color focus:text-secondary-color ">
             <span>Obstacle</span>
           </button>
           <button data-value="end" @click="selected='end'"
             :class="selected=='end'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
-            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-primary-color hover:text-secondary-color  focus:bg-primary-color focus:text-secondary-color ">
+            class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-black hover:text-white  focus:bg-primary-color focus:text-secondary-color ">
             <span>End</span>
           </button>
         </li>
