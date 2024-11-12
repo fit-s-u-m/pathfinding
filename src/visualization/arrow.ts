@@ -6,7 +6,6 @@ import { ArrowType } from "../type";
 
 export class Arrow {
   arrowType: ArrowType = "normal"
-  color: COLOR = colors.primary as COLOR
   thickness: number = 1
   weight: number
   start: Cell
@@ -29,7 +28,6 @@ export class Arrow {
 
     p.stroke(color)
     p.strokeWeight(thickness)
-    p.noFill()
 
     p.translate(startX, startY)
     p.rotate(angle)
@@ -58,6 +56,7 @@ export class Arrow {
     p.textSize(size)
     p.fill(color)
     p.stroke("black")
+    p.stroke(colors.text)
     p.noFill()
     p.textAlign(p.CENTER)
     if (Math.abs(angle) <= Math.PI * 3 / 2 && Math.abs(angle) >= Math.PI / 2) {
@@ -95,7 +94,6 @@ export class Arrow {
   }
   beNormal() {
     this.arrowType = "normal"
-    this.color = colors.primary as COLOR
     this.thickness = 1
   }
 
