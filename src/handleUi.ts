@@ -1,7 +1,7 @@
 import p5 from "p5";
-import { ALGORITHMS } from "./type";
+import { ALGORITHMS, SELECT } from "./type";
 export class Ui {
-  selectedFlag: string = "start"
+  selectedFlag: SELECT = "start"
   selectedAlgorithm: ALGORITHMS = "Breadth-First Search";
   selectedVisual: "Grid" | "Map" = "Grid"
 
@@ -120,8 +120,10 @@ export class Ui {
     if (!this.flags) return
     for (let buttons of this.flags) {
       buttons.mouseClicked(() => {
-        console.log(this.selectedFlag)
-        this.selectedFlag = buttons.elt.dataset.value
+        const flag = buttons.elt.dataset.value as SELECT
+        if (this.selectedFlag != flag) {
+          this.selectedFlag = flag
+        }
       })
     }
   }
