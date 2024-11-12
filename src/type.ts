@@ -1,6 +1,6 @@
 import { Cell } from "./util/cell";
 
-export type CellType = "start" | "end" | "obstacle" | "normal" | "path" | "highlight";
+export type CellType = "start" | "end" | "obstacle" | "normal" | "path" | "highlight" | "current";
 export type SELECT = "start" | "end" | "obstacle";
 export type ALGORITHMS =
   | "A* algorithms"
