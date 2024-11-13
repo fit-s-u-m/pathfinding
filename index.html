@@ -12,13 +12,14 @@
   <div class="navbar glass p-0" x-data="{selected:'start'}">
     <div class=" navbar-start">
       <div class="dropdown" x-data="{isOpened:false}">
-        <div tabindex="0" role="button" @click="isOpened = !isOpened" class="btn btn-ghost lg:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div tabindex="0" role="button" @click="isOpened = !isOpened"
+          class="btn btn-ghost lg:hidden bg-secondary-color hover:bg-accent-color">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
         </div>
         <ul tabindex="0" x-show="isOpened" @click.outside="isOpened=false"
-          class="menu menu-sm dropdown-content bg-background-color rounded-box z-[1] mt-3 h-[80vh] w-[60vh] p-2 shadow">
+          class="menu menu-sm dropdown-content bg-background-color rounded-box z-[1] mt-3 h-[60vh] w-[60vw] p-2 shadow">
           <li class="flex flex-row gap-5 items-center">
             <button data-value="start" @click="selected='start'"
               :class="selected =='start'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color'  "
@@ -60,12 +61,6 @@
             </select>
 
           </li>
-          <li>
-            <button
-              class="play bg-secondary-color text-primary-color focus:bg-primary-color focus:text-secondary-color hover:bg-primary-color hover:text-secondary-color btn w-20">
-              run
-            </button>
-          </li>
         </ul>
       </div>
       <a class="btn btn-ghost text-xl text-primary-color">Nehemiah</a>
@@ -87,12 +82,6 @@
             :class="selected=='end'?'bg-primary-color text-secondary-color':'bg-secondary-color text-primary-color' "
             class="selectable-button inline-flex items-center justify-center h-10 gap-2 px-6 text-sm font-medium tracking-wide transition duration-300 justify-self-center whitespace-nowrap   hover:bg-black hover:text-white  focus:bg-primary-color focus:text-secondary-color ">
             <span>End</span>
-          </button>
-        </li>
-        <li class="flex flex-row items-center ">
-          <button
-            class="play bg-secondary-color text-primary-color focus:bg-primary-color focus:text-secondary-color hover:bg-primary-color hover:text-secondary-color  ">
-            run
           </button>
         </li>
         <li class="justify-center">
@@ -121,6 +110,12 @@
     </div>
     <div class="navbar-end mx-10">
       <ul class="flex flex-row gap-5">
+        <li class="flex flex-row items-center ">
+          <button
+            class="play btn btn-sm bg-secondary-color text-primary-color focus:bg-primary-color focus:text-secondary-color hover:bg-primary-color hover:text-secondary-color  ">
+            run
+          </button>
+        </li>
 
         <li class="flex flex-row gap-3 items-center">
           <button id="prev"
