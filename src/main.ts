@@ -24,10 +24,12 @@ const drawing = (p: p5) => {
   let ui: Ui;
   let algorithm: PathFindingAlgorithm;
   let iterator: Iterator<void>
-  let geoJson: any
+  let geoJsonCities: any
+  let getJsoncountry: any
   let paused = false
   p.preload = () => {
-    geoJson = p.loadJSON("/pathfinding/map.geojson")
+    geoJsonCities = p.loadJSON("/pathfinding/map.geojson")
+    getJsoncountry = p.loadJSON("/pathfinding/mapOutline.geojson")
   }
   p.setup = () => {
     p.createCanvas(app.clientWidth, app.clientHeight);
@@ -43,7 +45,7 @@ const drawing = (p: p5) => {
     if (ui.selectedVisual === "Grid")
       graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
     else
-      graph = new Country(geoJson, app.clientWidth, app.clientHeight)
+      graph = new Country(geoJsonCities, getJsoncountry, app.clientWidth, app.clientHeight)
 
     graph.createNeighbors()
     algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
@@ -121,12 +123,12 @@ const drawing = (p: p5) => {
     }
   }
   function updateVisual(selectedVisual: "Grid" | "Map") {
-    if (!app || !geoJson) return
+    if (!app || !geoJsonCities) return
     if (selectedVisual === "Grid") {
       graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
     }
     else {
-      graph = new Country(geoJson, app.clientWidth, app.clientHeight)
+      graph = new Country(geoJsonCities, app.clientWidth, app.clientHeight)
     }
     graph.createNeighbors()
   }

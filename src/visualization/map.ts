@@ -22,12 +22,15 @@ export class Country implements Graph {
   offsetX: number = 0
   offsetY: number = 0
   cities: City[] = []
+  countryDatas: [number, number][] = []
 
-  constructor(geoJson: any, canvasWidth: number, canvasHeight: number) {
+  constructor(geoJsonCities: any, geoJsonCountry: any, canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth
     this.canvasHeight = canvasHeight
 
-    const cityDatas = geoJson.features
+    const cityDatas = geoJsonCities.features
+    const countryDatas = geoJsonCountry.geometry.coordinates
+    this.countryDatas = countryDatas
     for (let cityData of cityDatas) {
       const name = cityData.properties.name
       const location = cityData.geometry.coordinates
@@ -238,6 +241,13 @@ export class Country implements Graph {
 
 
   show(p: p5): void {
+    p.beginShape()
+    for (let coord of this.countryDatas) {
+      const { x, y } = this.project({ x: coord[0], y: coord[1] })
+      p.noFill()
+      p.vertex(x, y)
+    }
+    p.endShape()
     for (let city of this.cities) {
       city.show(p)
     }
@@ -263,7 +273,9 @@ export class Country implements Graph {
   resize(width: number, height: number): void {
     this.canvasWidth = width
     this.canvasHeight = height
+    const min = Math.min(width, height)
     for (let city of this.cities) {
+      city.radius = min / 30
       city.resize()
     }
   }
