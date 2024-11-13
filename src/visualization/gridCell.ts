@@ -3,7 +3,6 @@ import { CellType, COLOR } from "../type"
 import { Cell } from "../util/cell"
 import { colors } from "../util/colors"
 import { Arrow } from "./arrow"
-import { History } from "../util/history"
 import { Action } from "../util/action"
 
 export class GridCell implements Cell {

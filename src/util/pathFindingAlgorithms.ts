@@ -1,4 +1,4 @@
-import { ALGORITHMS, State } from "../type";
+import { ALGORITHMS } from "../type";
 import { BreadthFirst } from "../Algorithms/BreadthFirst";
 import { Dijkstra } from "../Algorithms/Dijkstra";
 import { Gready } from "../Algorithms/Gready"
