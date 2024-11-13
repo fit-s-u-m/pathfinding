@@ -128,7 +128,7 @@ const drawing = (p: p5) => {
       graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
     }
     else {
-      graph = new Country(geoJsonCities, app.clientWidth, app.clientHeight)
+      graph = new Country(geoJsonCities, getJsoncountry, app.clientWidth, app.clientHeight)
     }
     graph.createNeighbors()
   }
