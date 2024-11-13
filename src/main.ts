@@ -1,19 +1,21 @@
 import p5 from "p5";
 import { Grid } from "../src/visualization/grid";
 import { Ui } from "./handleUi";
-import { ALGORITHMS, State } from "./type";
+import { ALGORITHMS } from "./type";
 import { Algorithms, PathFindingAlgorithm } from "./util/pathFindingAlgorithms";
 import { History } from "./util/history";
 import { Country } from "./visualization/map";
 import { Graph } from "./dataStructures/Graph";
 
 import Alpine from 'alpinejs'
+import { ComposedAction } from "./util/action";
 window.Alpine = Alpine
 Alpine.start()
 
 
 const app = document.getElementById("app");
 const history = History.getInstance()
+let composedAction: ComposedAction | null = null;
 
 if (!app) throw new Error("App not found");
 
@@ -21,7 +23,7 @@ const drawing = (p: p5) => {
   let graph: Graph;
   let ui: Ui;
   let algorithm: PathFindingAlgorithm;
-  let iterator: Iterator<State>
+  let iterator: Iterator<void>
   let geoJson: any
   let paused = false
   p.preload = () => {
@@ -38,13 +40,11 @@ const drawing = (p: p5) => {
     ui.updateVisual(updateVisual)
     console.log(ui.selectedVisual)
 
-    if (ui.selectedVisual === "Grid") {
+    if (ui.selectedVisual === "Grid")
       graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
-    }
-    else {
+    else
       graph = new Country(geoJson, app.clientWidth, app.clientHeight)
 
-    }
     graph.createNeighbors()
     algorithm = Algorithms.algorithms(ui.selectedAlgorithm);
 
@@ -70,10 +70,18 @@ const drawing = (p: p5) => {
   };
   p.mouseDragged = () => {
     const selected = ui.selectedFlag;
-    if (selected === "obstacle") {
-      graph.addObstacle(p.mouseX, p.mouseY);
+    if (selected == "obstacle" && composedAction) {
+      const action = graph.addObstacle(p.mouseX, p.mouseY);
+      if (action)
+        composedAction.addAction(action)
     }
   };
+  p.mouseReleased = () => {
+    if (!composedAction) return
+    if (!composedAction.isEmpty())
+      History.getInstance().saveState(composedAction)
+    composedAction = null // reset
+  }
   p.mousePressed = () => {
     plantFlag()
   }
@@ -94,9 +102,11 @@ const drawing = (p: p5) => {
   const plantFlag = () => {
     const selected = ui.selectedFlag;
     if (selected === "obstacle") {
-      graph.addObstacle(p.mouseX, p.mouseY);
+      const action = graph.addObstacle(p.mouseX, p.mouseY);
+      composedAction = new ComposedAction()
+      if (action)
+        composedAction.addAction(action)
     } else if (selected === "start") {
-      console.log("plant flag")
       graph.setStart(p.mouseX, p.mouseY);
     } else if (selected === "end") {
       graph.setEnd(p.mouseX, p.mouseY);
@@ -105,6 +115,7 @@ const drawing = (p: p5) => {
   function updatePlay() {
     if (graph.start && graph.end) {
       graph.clearHighlight() // clear the board first
+      history.goToPresent()
       iterator = algorithm.findPath(graph, graph.start, graph.end);
     }
   }

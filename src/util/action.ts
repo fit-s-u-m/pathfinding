@@ -39,4 +39,7 @@ export class ComposedAction implements ACTION {
   undo() {
     this.actions.reverse().forEach(action => action.undo())
   }
+  isEmpty() {
+    return this.actions.length === 0
+  }
 }

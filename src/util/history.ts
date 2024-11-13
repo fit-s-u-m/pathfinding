@@ -19,13 +19,15 @@ export class History {
   }
 
   saveState(action: ACTION) {
-    // console.log(action)
+    console.log(this.undoStack.size())
+    console.log(this.redoStack.size())
     this.undoStack.push(action)
+    this.redoStack = new Stack<ACTION>()
   }
   prev() {
     const action = this.undoStack.pop()
-    console.log(this.undoStack)
-    console.log(this.redoStack)
+    console.log(this.undoStack, "undo")
+    console.log(this.redoStack, "redo")
     if (action) {
       this.redoStack.push(action)
       action.undo()
@@ -33,8 +35,8 @@ export class History {
   }
   next() {
     const action = this.redoStack.pop()
-    console.log(this.undoStack)
-    console.log(this.redoStack)
+    console.log(this.undoStack, "undo")
+    console.log(this.redoStack, "redo")
     if (action) {
       this.undoStack.push(action)
       action.do()
@@ -45,5 +47,11 @@ export class History {
   }
   hasNext() {
     return this.redoStack.size() > 0
+  }
+  goToPresent() {
+    while (this.hasNext()) {
+      const redo = this.redoStack.pop();
+      if (redo) this.undoStack.push(redo);
+    }
   }
 }
