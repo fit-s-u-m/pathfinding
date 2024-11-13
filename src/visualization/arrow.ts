@@ -6,6 +6,7 @@ import { ArrowType } from "../type";
 
 export class Arrow {
   arrowType: ArrowType = "normal"
+  color: COLOR = colors.secondary as COLOR
   thickness: number = 1
   weight: number
   start: Cell
@@ -28,6 +29,7 @@ export class Arrow {
 
     p.stroke(color)
     p.strokeWeight(thickness)
+    p.fill("black")
 
     p.translate(startX, startY)
     p.rotate(angle)
@@ -55,7 +57,6 @@ export class Arrow {
     p.rotate(angle)
     p.textSize(size)
     p.fill(color)
-    p.stroke("black")
     p.stroke(colors.text)
     p.noFill()
     p.textAlign(p.CENTER)
@@ -81,6 +82,7 @@ export class Arrow {
 
   }
   showHighlight(p: p5) {
+    if (this.arrowType == "path") return
     // const alpha = p.map(this.weight, 0, 1, 200, 0)
     let color = colors.accent.slice(0, 3) as number[]
     const thickness = p.map(this.weight, 0, 1, 5, 0)
@@ -94,6 +96,7 @@ export class Arrow {
   }
   beNormal() {
     this.arrowType = "normal"
+    this.color = colors.secondary as COLOR
     this.thickness = 1
   }
 

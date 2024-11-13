@@ -1,13 +1,15 @@
 import { Graph } from "../dataStructures/Graph";
-import { CellType } from "../type";
+import { ArrowType, CellType, COLOR } from "../type";
 import { City } from "./city";
 import { Cell } from "../util/cell";
 import p5 from "p5";
 import { Arrow } from "./arrow";
+import { History } from "../util/history";
+import { Action } from "../util/action";
 
 export class Country implements Graph {
-  start: Cell | null = null;
-  end: Cell | null = null;
+  start: City | null = null;
+  end: City | null = null;
   cellType: CellType = "normal"
 
   algorithsmPathCells: Cell[] = [];
@@ -33,41 +35,90 @@ export class Country implements Graph {
     }
   }
   setStart(x: number, y: number): void {
-    for (let city of this.cities) {
-      if (city.isInCell(x, y)) {
-        if (this.start) this.start.beNormal()
-        city.beStart()
-        this.start = city
+    const cell = this.getCell(x, y)
+
+    if (cell) {
+      const startDoFunc = (cell: City) => {
+        if (this.start)
+          this.start.beNormal()
+        cell.beStart()
+        this.start = cell
       }
+      const startUndoFunc = (cell: City, prevStart: City | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
+        if (prevStart)
+          prevStart.beStart()
+        cell.type = cellPrevType
+        cell.color = cellPrevColor
+        this.start = prevStart
+      }
+
+      const action = new Action(startDoFunc.bind(this, cell), startUndoFunc.bind(this, cell, this.start, cell.type, cell.color))
+      action.do()
+      History.getInstance().saveState(action)
     }
   }
   setEnd(x: number, y: number): void {
-    for (let city of this.cities) {
-      if (city.isInCell(x, y)) {
-        if (this.end) this.end.beNormal()
-        city.beEnd()
-        this.end = city
+    const cell = this.getCell(x, y)
+    if (cell) {
+      const endDoFunc = (cell: City) => {
+        if (this.end)
+          this.end.beNormal()
+        cell.beEnd()
+        this.end = cell
       }
-    }
-  }
-  addObstacle(x: number, y: number): void {
-    for (let city of this.cities) {
-      if (city.isInCell(x, y)) {
-        city.beObstacle()
+      const endUndoFunc = (cell: City, prevEnd: City | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
+        if (prevEnd)
+          prevEnd.beEnd()
+        cell.type = cellPrevType
+        cell.color = cellPrevColor
+        this.end = prevEnd
       }
-    }
 
+      const action = new Action(endDoFunc.bind(this, cell), endUndoFunc.bind(this, cell, this.end, cell.type, cell.color))
+      action.do()
+      History.getInstance().saveState(action)
+    }
   }
-  addPathCell(cell: Cell): void {
+  addObstacle(x: number, y: number): Action | null {
+    const cell = this.getCell(x, y)
+    if (cell && cell.type != "obstacle") {
+      const undo = (prevColor: COLOR, prevType: CellType) => {
+        cell.type = prevType
+        cell.color = prevColor
+      }
+      const action = new Action(cell.beObstacle.bind(cell), undo.bind(cell, cell.color, cell.type))
+      action.do()
+      return action
+    }
+    else
+      return null
+  }
+  addPathCell(cell: City): Action {
     this.algorithsmPathCells.push(cell)
-    cell.beInPath()
+
+    const undo = (prevColor: COLOR, prevType: CellType) => {
+      cell.type = prevType
+      cell.color = prevColor
+    }
+    const action = new Action(cell.beInPath.bind(cell), undo.bind(cell, cell.color, cell.type))
+    action.do()
+    return action
   }
-  highlighightConnection(start: City, end: City): void {
+  highlighightConnection(start: City, end: City): Action {
     const neighbor = start.getNeighbor(end.name)
     console.log(neighbor)
     if (neighbor) {
-      neighbor.arrow.bePath()
+      const undo = (prevColor: COLOR, prevType: ArrowType) => {
+        neighbor.arrow.arrowType = prevType
+        neighbor.arrow.color = prevColor
+      }
+      const action = new Action(neighbor.arrow.bePath.bind(neighbor.arrow), undo.bind(neighbor, neighbor.arrow.color, neighbor.arrow.arrowType))
       this.highlightedArrows.push(neighbor.arrow)
+      action.do()
+      return action
+    }
+    else {
+      return new Action(() => { }, () => { })
     }
   }
 
@@ -144,15 +195,21 @@ export class Country implements Graph {
   }
 
   onMouseHover(x: number, y: number, p: p5) {
+    const minCanvas = Math.min(this.canvasWidth, this.canvasHeight)
+    const size = p.map(minCanvas, 100, 1000, 2, 20)
+
     const city = this.getCell(x, y)
     if (city) {
       p.cursor(p.CROSS)
-      city.highlightArrow(p)
-      city.showDistance(this.getActualDistance.bind(this), p)
+      city.textSize = size
       for (let neighbors of city.neighbors) {
-        neighbors.cell.showText(neighbors.cell.name, 12, p)
+        const neighboringCity = neighbors.cell as City
+        neighboringCity.foucus(p)
+        neighboringCity.showText(neighbors.cell.name, size, p)
       }
-      city.showText(city.name, 40, p)
+      city.highlightArrow(p)
+      city.showDistance(p, this.getActualDistance.bind(this), size)
+      city.showText(city.name, size * 2.5, p)
     }
   }
   private toRadians(degree: number) {
