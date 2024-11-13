@@ -95,13 +95,19 @@ export class City implements Cell {
       p.circle(this.location.x, this.location.y, this.radius)
       p.circle(this.location.x, this.location.y, this.radius)
       p.circle(this.location.x, this.location.y, this.radius)
-    }
-    p.fill(this.color)
-    p.circle(this.location.x, this.location.y, this.radius)
-    if (this.type == "highlight" || this.type == "path") {
       const textSize = p.map(this.radius, 0, 50, 2, 20) // TODO: adjust text size
       this.showText(this.text, textSize, p)
     }
+    if (this.type == "highlight") {
+      p.drawingContext.shadowColor = "orange"
+      p.drawingContext.shadowBlur = 20
+      p.circle(this.location.x, this.location.y, this.radius)
+      const textSize = p.map(this.radius, 0, 50, 2, 20) // TODO: adjust text size
+      this.showText(this.text, textSize, p)
+
+    }
+    p.fill(this.color)
+    p.circle(this.location.x, this.location.y, this.radius)
     p.pop()
     for (let neighbor of this.neighbors) {
       neighbor.arrow.show(p)
