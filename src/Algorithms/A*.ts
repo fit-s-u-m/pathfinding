@@ -1,9 +1,11 @@
-import { COLOR, State } from "../type";
+import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
+import { Action, ComposedAction } from "../util/action";
+import { History } from "../util/history";
 
 export class Astar implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
@@ -11,8 +13,7 @@ export class Astar implements PathFindingAlgorithm {
   private Pqueue: PQueue<Cell> = new PQueue();
   private previous: Map<number, Cell> = new Map();
 
-  // Correctly defining the generator function
-  *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
+  *findPath(graph: Graph, start: Cell, end: Cell): Generator<void> {
     console.log("running A*")
 
     // clear prev data
@@ -36,6 +37,7 @@ export class Astar implements PathFindingAlgorithm {
         .filter((cell: Cell) => cell.type !== "obstacle")
         .filter((cell: Cell) => !this.visited.has(graph.toNumber(cell)));
 
+      const composedAction = new ComposedAction();
       this.visited.add(graph.toNumber(current));
 
       for (const cell of neighbors) {
@@ -72,23 +74,14 @@ export class Astar implements PathFindingAlgorithm {
           break
         }
 
-        cell.highlight(color)
+        const action = cell.highlight(color)
+        composedAction.addAction(action)
         cell.text = weight.toFixed(1)
         graph.currentScan = cell
 
-        // Constructing the state to yield
-        if (start && end) {
-          const state: State = {
-            start,
-            end,
-            obstacles: graph.getObstacles(),
-            highlightCell: graph.getHighlights(),
-            algorithsmPathCells: graph.algorithsmPathCells,
-          };
-
-          yield state;
-        }
+        yield
       }
+      History.getInstance().saveState(composedAction)
     }
 
     // At the end of the pathfinding, reconstruct the path
@@ -105,31 +98,32 @@ export class Astar implements PathFindingAlgorithm {
     let prevCell = this.previous.get(graph.toNumber(end));
     let path: Cell[] = [];
     if (!prevCell) return [];
+    const composedAction = new ComposedAction()
 
-    graph.highlighightConnection(prevCell, end)
+    const action = graph.highlighightConnection(prevCell, end)
+    composedAction.addAction(action)
+
     console.log("reconstructing path");
 
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
 
-      graph.addPathCell(prevCell);
+      const action = graph.addPathCell(prevCell);
+      composedAction.addAction(action)
       path.push(prevCell);
-      const state: State = {
-        start,
-        end,
-        obstacles: graph.getObstacles(),
-        highlightCell: graph.getHighlights(),
-        algorithsmPathCells: graph.algorithsmPathCells,
-      };
-
-      yield state;
+      yield
       const nextCell = this.previous.get(graph.toNumber(prevCell));
-      if (nextCell)
-        graph.highlighightConnection(nextCell, prevCell)
+      if (nextCell) {
+        const action = graph.highlighightConnection(nextCell, prevCell)
+        composedAction.addAction(action)
+      }
       prevCell = nextCell
     }
 
-    if (prevCell)
-      graph.highlighightConnection(start, prevCell)
+    if (prevCell) {
+      const action = graph.highlighightConnection(start, prevCell)
+      composedAction.addAction(action)
+    }
+    History.getInstance().saveState(composedAction)
     path.push(start);
     return path;
   }

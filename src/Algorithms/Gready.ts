@@ -1,19 +1,18 @@
-import { COLOR, State } from "../type";
+import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
+import { History } from "../util/history";
+import { ComposedAction } from "../util/action";
 
 export class Gready implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
   private Pqueue: PQueue<Cell> = new PQueue();
   private previous: Map<number, Cell> = new Map();
 
-  // Correctly defining the generator function
-  *findPath(graph: Graph, start: Cell, end: Cell): Generator<State> {
-    console.log("running greedy")
-
+  *findPath(graph: Graph, start: Cell, end: Cell): Generator<void> {
     // clear prev data
     this.reset()
 
@@ -34,7 +33,7 @@ export class Gready implements PathFindingAlgorithm {
         .filter((cell: Cell) => cell.type !== "obstacle")
         .filter((cell: Cell) => !this.visited.has(graph.toNumber(cell)));
 
-
+      const composedAction = new ComposedAction()
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
@@ -52,22 +51,12 @@ export class Gready implements PathFindingAlgorithm {
           break
         }
 
-        cell.highlight(color)
+        const action = cell.highlight(color)
+        composedAction.addAction(action)
         cell.text = heuristic.toFixed(1)
-
-        // Constructing the state to yield
-        if (start && end) {
-          const state: State = {
-            start,
-            end,
-            obstacles: graph.getObstacles(),
-            highlightCell: graph.getHighlights(),
-            algorithsmPathCells: graph.algorithsmPathCells,
-          };
-
-          yield state;
-        }
       }
+      History.getInstance().saveState(composedAction)
+
     }
 
     // At the end of the pathfinding, reconstruct the path
@@ -84,31 +73,32 @@ export class Gready implements PathFindingAlgorithm {
     let prevCell = this.previous.get(graph.toNumber(end));
     let path: Cell[] = [];
     if (!prevCell) return [];
-
-    graph.highlighightConnection(prevCell, end)
     console.log("reconstructing path");
+
+    const composedAction = new ComposedAction();
+    const action = graph.highlighightConnection(prevCell, end)
+    composedAction.addAction(action)
+
 
     while (prevCell && graph.toNumber(prevCell) !== graph.toNumber(start)) {
 
-      graph.addPathCell(prevCell);
+      const action = graph.addPathCell(prevCell);
+      composedAction.addAction(action)
       path.push(prevCell);
-      const state: State = {
-        start,
-        end,
-        obstacles: graph.getObstacles(),
-        highlightCell: graph.getHighlights(),
-        algorithsmPathCells: graph.algorithsmPathCells,
-      };
-
-      yield state;
+      yield
       const nextCell = this.previous.get(graph.toNumber(prevCell));
-      if (nextCell)
-        graph.highlighightConnection(nextCell, prevCell)
+      if (nextCell) {
+        const action = graph.highlighightConnection(nextCell, prevCell)
+        composedAction.addAction(action)
+      }
       prevCell = nextCell
     }
 
-    if (prevCell)
-      graph.highlighightConnection(start, prevCell)
+    if (prevCell) {
+      const action = graph.highlighightConnection(start, prevCell)
+      composedAction.addAction(action)
+    }
+    History.getInstance().saveState(composedAction)
     path.push(start);
     return path;
   }

@@ -116,6 +116,7 @@ const drawing = (p: p5) => {
     if (graph.start && graph.end) {
       graph.clearHighlight() // clear the board first
       history.goToPresent()
+      if (paused) paused = false
       iterator = algorithm.findPath(graph, graph.start, graph.end);
     }
   }
