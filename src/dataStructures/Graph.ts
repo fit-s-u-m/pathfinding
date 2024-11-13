@@ -10,7 +10,7 @@ export interface Graph {
 
   createNeighbors(): void
 
-  getWeight(cell1: Cell, cell2: Cell): number
+  getDistance(cell1: Cell, cell2: Cell): number
 
   toNumber(cell: Cell): number
   toCell(num: number): Cell | undefined

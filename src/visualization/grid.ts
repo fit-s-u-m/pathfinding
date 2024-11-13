@@ -66,7 +66,7 @@ export class Grid implements Graph {
         neighbors.push(topNeighborCell);
         const weight = this.getNormalWeight(cell, topNeighborCell)
         const arrow = new Arrow(cell, topNeighborCell, weight)
-        cell.neighbors.push({ cell: topNeighborCell, weight: this.getWeight(cell, topNeighborCell), arrow })
+        cell.neighbors.push({ cell: topNeighborCell, weight: this.getDistance(cell, topNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1 && cell.row > 0) {
@@ -76,7 +76,7 @@ export class Grid implements Graph {
         neighbors.push(topRightNeighborCell);
         const weight = this.getNormalWeight(cell, topRightNeighborCell)
         const arrow = new Arrow(cell, topRightNeighborCell, weight)
-        cell.neighbors.push({ cell: topRightNeighborCell, weight: this.getWeight(cell, topRightNeighborCell), arrow })
+        cell.neighbors.push({ cell: topRightNeighborCell, weight: this.getDistance(cell, topRightNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1) {
@@ -86,7 +86,7 @@ export class Grid implements Graph {
         neighbors.push(rightNeighborCell);
         const weight = this.getNormalWeight(cell, rightNeighborCell)
         const arrow = new Arrow(cell, rightNeighborCell, weight)
-        cell.neighbors.push({ cell: rightNeighborCell, weight: this.getWeight(cell, rightNeighborCell), arrow })
+        cell.neighbors.push({ cell: rightNeighborCell, weight: this.getDistance(cell, rightNeighborCell), arrow })
       }
     }
     if (cell.col < this.numCol - 1 && cell.row < this.numRow - 1) {
@@ -96,7 +96,7 @@ export class Grid implements Graph {
         neighbors.push(downRightNeighborCell);
         const weight = this.getNormalWeight(cell, downRightNeighborCell)
         const arrow = new Arrow(cell, downRightNeighborCell, weight)
-        cell.neighbors.push({ cell: downRightNeighborCell, weight: this.getWeight(cell, downRightNeighborCell), arrow })
+        cell.neighbors.push({ cell: downRightNeighborCell, weight: this.getDistance(cell, downRightNeighborCell), arrow })
       }
     }
     if (cell.row < this.numRow - 1) {
@@ -106,7 +106,7 @@ export class Grid implements Graph {
         neighbors.push(downNeighborCell);
         const weight = this.getNormalWeight(cell, downNeighborCell)
         const arrow = new Arrow(cell, downNeighborCell, weight)
-        cell.neighbors.push({ cell: downNeighborCell, weight: this.getWeight(cell, downNeighborCell), arrow })
+        cell.neighbors.push({ cell: downNeighborCell, weight: this.getDistance(cell, downNeighborCell), arrow })
       }
     }
     if (cell.col > 0 && cell.row < this.numRow - 1) {
@@ -116,7 +116,7 @@ export class Grid implements Graph {
         neighbors.push(downLeftNeighborCell);
         const weight = this.getNormalWeight(cell, downLeftNeighborCell)
         const arrow = new Arrow(cell, downLeftNeighborCell, weight)
-        cell.neighbors.push({ cell: downLeftNeighborCell, weight: this.getWeight(cell, downLeftNeighborCell), arrow })
+        cell.neighbors.push({ cell: downLeftNeighborCell, weight: this.getDistance(cell, downLeftNeighborCell), arrow })
       }
     }
     if (cell.col > 0) {
@@ -126,7 +126,7 @@ export class Grid implements Graph {
         neighbors.push(leftNeighborCell);
         const weight = this.getNormalWeight(cell, leftNeighborCell)
         const arrow = new Arrow(cell, leftNeighborCell, weight)
-        cell.neighbors.push({ cell: leftNeighborCell, weight: this.getWeight(cell, leftNeighborCell), arrow })
+        cell.neighbors.push({ cell: leftNeighborCell, weight: this.getDistance(cell, leftNeighborCell), arrow })
       }
     }
     if (cell.col > 0 && cell.row > 0) {
@@ -136,7 +136,7 @@ export class Grid implements Graph {
         neighbors.push(topLeftNeighborCell);
         const weight = this.getNormalWeight(cell, topLeftNeighborCell)
         const arrow = new Arrow(cell, topLeftNeighborCell, weight)
-        cell.neighbors.push({ cell: topLeftNeighborCell, weight: this.getWeight(cell, topLeftNeighborCell), arrow })
+        cell.neighbors.push({ cell: topLeftNeighborCell, weight: this.getDistance(cell, topLeftNeighborCell), arrow })
       }
     }
     return neighbors;
@@ -147,7 +147,7 @@ export class Grid implements Graph {
     }
   }
 
-  getWeight(cell1: GridCell, cell2: GridCell): number {
+  getDistance(cell1: GridCell, cell2: GridCell): number {
     return Math.sqrt((cell1.row - cell2.row) ** 2 + (cell1.col - cell2.col) ** 2)
   }
   getNormalWeight(cell1: GridCell, cell2: GridCell): number { // TODO: make it scaleable

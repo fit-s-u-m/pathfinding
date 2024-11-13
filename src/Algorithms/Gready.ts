@@ -38,7 +38,7 @@ export class Gready implements PathFindingAlgorithm {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
 
-        const heuristic = graph.getWeight(end, cell)
+        const heuristic = graph.getDistance(cell, end)
 
         let color: COLOR = colors.secondary as COLOR
 

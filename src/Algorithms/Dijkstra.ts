@@ -1,4 +1,4 @@
-import { COLOR, State } from "../type";
+import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
@@ -7,7 +7,6 @@ import { colors } from "../util/colors";
 
 import { History } from "../util/history";
 import { ComposedAction } from "../util/action";
-import { Grid } from "../visualization/grid";
 
 export class Dijkstra implements PathFindingAlgorithm {
   private visited: Set<number> = new Set();
@@ -15,13 +14,10 @@ export class Dijkstra implements PathFindingAlgorithm {
   private Pqueue: PQueue<Cell> = new PQueue();
   private previous: Map<number, Cell> = new Map();
 
-  // Correctly defining the generator function
   *findPath(graph: Graph, start: Cell, end: Cell): Generator<void> {
-    console.log("running dijkstra")
 
     // clear prev data
     this.reset()
-    this.shortestDistance = new Map(); // map(index,dist)
 
     this.visited.add(graph.toNumber(start));
     this.Pqueue.enqueue(start, 0);
@@ -29,7 +25,6 @@ export class Dijkstra implements PathFindingAlgorithm {
     let found = false;
 
     while (!this.Pqueue.isEmpty() && !found) {
-      // const current = this.queue.dequeue();
       const current = this.Pqueue.dequeue();
       if (!current) break;
 
@@ -51,7 +46,7 @@ export class Dijkstra implements PathFindingAlgorithm {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
 
-        const currentWeight = graph.getWeight(current, cell)
+        const currentWeight = graph.getDistance(current, cell)
         const runningWeight = currentWeight + (this.shortestDistance.get(graph.toNumber(current)) || 0)
         const prevWeight = this.shortestDistance.get(graph.toNumber(cell))
 
@@ -95,7 +90,6 @@ export class Dijkstra implements PathFindingAlgorithm {
       History.getInstance().saveState(composedAction)
     }
 
-    // At the end of the pathfinding, reconstruct the path
     yield* this.reconstructPath(graph, start, end);
 
   }
@@ -103,6 +97,7 @@ export class Dijkstra implements PathFindingAlgorithm {
     this.visited = new Set();
     this.Pqueue = new PQueue();
     this.previous = new Map();
+    this.shortestDistance = new Map(); // map(index,dist)
 
   }
   *reconstructPath(graph: Graph, start: Cell, end: Cell) {

@@ -4,7 +4,7 @@ import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
-import { Action, ComposedAction } from "../util/action";
+import { ComposedAction } from "../util/action";
 import { History } from "../util/history";
 
 export class Astar implements PathFindingAlgorithm {
@@ -22,7 +22,7 @@ export class Astar implements PathFindingAlgorithm {
 
     this.visited.add(graph.toNumber(start));
 
-    const hScore = graph.getWeight(start, end)
+    const hScore = graph.getDistance(start, end)
     const fScore = 0 + hScore
     this.Pqueue.enqueue(start, fScore);
     this.gScore.set(graph.toNumber(start), 0)
@@ -44,7 +44,7 @@ export class Astar implements PathFindingAlgorithm {
         if (this.visited.has(graph.toNumber(cell))) continue;
 
 
-        const currentWeight = graph.getWeight(current, cell)
+        const currentWeight = graph.getDistance(current, cell)
         const runningWeight = currentWeight + (this.gScore.get(graph.toNumber(current)) || 0)
         const prevWeight = this.gScore.get(graph.toNumber(cell))
 
@@ -53,7 +53,7 @@ export class Astar implements PathFindingAlgorithm {
 
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
           this.gScore.set(graph.toNumber(cell), runningWeight)
-          const hScore = graph.getWeight(cell, end)
+          const hScore = graph.getDistance(cell, end)
 
           const fScore = (this.gScore.get(graph.toNumber(cell)) || 0) + hScore
 
@@ -66,7 +66,7 @@ export class Astar implements PathFindingAlgorithm {
         else {
 
           color = colors.secondary as COLOR
-          const hScore = graph.getWeight(cell, end)
+          const hScore = graph.getDistance(cell, end)
           weight = prevWeight + hScore
         }
         if (graph.toNumber(cell) === graph.toNumber(end)) {

@@ -128,7 +128,7 @@ export class Country implements Graph {
   getHighlights(): Cell[] {
     return this.cities.filter(city => city.type === "highlight")
   }
-  getWeight(cell1: City, cell2: City): number {
+  getDistance(cell1: City, cell2: City): number {
     return this.getActualDistance(cell1, cell2)
   }
   getNormalWeight(cell1: Cell, cell2: Cell): number {

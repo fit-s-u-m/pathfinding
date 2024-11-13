@@ -53,7 +53,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
           break
         }
         const color = colors.primary as COLOR
-        cell.text = graph.getWeight(current, cell).toFixed(1)
+        cell.text = graph.getDistance(current, cell).toFixed(1)
 
         const action = cell.highlight(color)
         composedAction.addAction(action)
