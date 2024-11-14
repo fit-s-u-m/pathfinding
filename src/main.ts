@@ -70,6 +70,8 @@ const drawing = (p: p5) => {
     p.resizeCanvas(app.clientWidth, app.clientHeight);
     graph.resize(app.clientWidth, app.clientHeight);
   };
+
+  // for pc users
   p.mouseDragged = () => {
     const selected = ui.selectedFlag;
     if (selected == "obstacle" && composedAction) {
@@ -87,6 +89,26 @@ const drawing = (p: p5) => {
   p.mousePressed = () => {
     plantFlag()
   }
+
+  // for mobile
+  p.touchMoved = () => {
+    const selected = ui.selectedFlag;
+    if (selected == "obstacle" && composedAction) {
+      const action = graph.addObstacle(p.mouseX, p.mouseY);
+      if (action)
+        composedAction.addAction(action)
+    }
+  }
+  p.touchEnded = () => {
+    if (!composedAction) return
+    if (!composedAction.isEmpty())
+      History.getInstance().saveState(composedAction)
+    composedAction = null // reset
+  }
+  p.touchStarted = () => {
+    plantFlag()
+  }
+
   function handleHistory(action: "prev" | "next") {
     if (action === "prev") {
       if (!paused)
