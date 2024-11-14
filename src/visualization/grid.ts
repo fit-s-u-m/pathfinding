@@ -37,7 +37,7 @@ export class Grid implements Graph {
 
     this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
-    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.cellSize / 2) / 2;
+    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
 
     this.makeGrid()
   }
