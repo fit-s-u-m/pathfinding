@@ -32,12 +32,15 @@ export class Country implements Graph {
     const cityDatas = geoJsonCities.features
     const countryDatas = geoJsonCountry.geometry.coordinates
     this.countryDatas = countryDatas
+
+    // Create cities
     for (let cityData of cityDatas) {
       const name = cityData.properties.name
       const location = cityData.geometry.coordinates
-      this.cities.push(new City({ name, location }, this.project.bind(this))) // create cities
+      this.cities.push(new City({ name, location }, this.project.bind(this)))
     }
 
+    // define the description bounds
     const mostLeft = Math.max(...this.countryDatas.map(coord => coord[0]))
     const mostBottom = Math.min(...this.countryDatas.map(coord => coord[1]))
     this.description = new Description(mostLeft, mostBottom, canvasWidth, canvasHeight, this.project.bind(this))
@@ -46,18 +49,18 @@ export class Country implements Graph {
     const cell = this.getCell(x, y)
 
     if (cell) {
-      const startDoFunc = (cell: City) => {
+      const startDoFunc = (city: City) => {
         if (this.start)
           this.start.beNormal()
-        cell.beStart()
-        this.start = cell
+        city.beStart()
+        this.start = city
       }
-      const startUndoFunc = (cell: City, prevStart: City | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
+      const startUndoFunc = (city: City, prevStart: City | null, cellPrevType: CellType, cellPrevColor: COLOR) => {
         if (prevStart)
           prevStart.beStart()
-        cell.type = cellPrevType
-        cell.color = cellPrevColor
-        this.start = prevStart
+        city.type = cellPrevType
+        city.color = cellPrevColor
+        this.start = prevStart // if there is no prevStart, it will be null
       }
 
       const action = new Action(startDoFunc.bind(this, cell), startUndoFunc.bind(this, cell, this.start, cell.type, cell.color))
@@ -156,7 +159,7 @@ export class Country implements Graph {
         if (city !== otherCity) {
           const weight = this.getNormalWeight(city, otherCity)
           const random = Math.random()
-          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.5 && weight < 0.18) {
+          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.2 && weight < 0.18) {
             city.makeConnection(otherCity, weight)
           }
         }

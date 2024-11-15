@@ -12,7 +12,7 @@ export interface Graph {
 
   getDistance(cell1: Cell, cell2: Cell): number
 
-  toNumber(cell: Cell): number
+  toNumber(cell: Cell | { row: number, col: number }): number
   toCell(num: number): Cell | undefined
 
   getObstacles(): Cell[]

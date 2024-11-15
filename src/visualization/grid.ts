@@ -58,89 +58,33 @@ export class Grid implements Graph {
     }
   }
   private makeNeighbors(cell: GridCell) {
-    const neighbors: GridCell[] = [];
-    if (cell.row > 0) {
-      const topNeighborCellIndex = (cell.row - 1) * this.numCol + cell.col
-      const topNeighborCell = this.cells.get(topNeighborCellIndex) as GridCell
-      if (topNeighborCell && topNeighborCell.type !== "obstacle") {
-        neighbors.push(topNeighborCell);
-        const weight = this.getNormalWeight(cell, topNeighborCell)
-        const arrow = new Arrow(cell, topNeighborCell, weight)
-        cell.neighbors.push({ cell: topNeighborCell, weight: this.getDistance(cell, topNeighborCell), arrow })
+    const directions = [
+      { row: -1, col: 0 }, // top
+      { row: -1, col: 1 }, // top-right
+      { row: 0, col: 1 }, // right
+      { row: 1, col: 1 }, // bottom-right
+      { row: 1, col: 0 }, // bottom
+      { row: 1, col: -1 }, // bottom-left
+      { row: 0, col: -1 }, // left
+      { row: -1, col: -1 }, // top-left
+    ];
+
+    for (let { row: dr, col: dc } of directions) {
+      const neighborRow = cell.row + dr;
+      const neighborCol = cell.col + dc;
+
+      if (neighborRow >= 0 && neighborRow < this.numRow && neighborCol >= 0 && neighborCol < this.numCol) {
+        const neighborCell = this.cells.get(this.toNumber({ row: neighborRow, col: neighborCol }));
+
+        if (neighborCell && neighborCell.type !== "obstacle") {
+          const weight = this.getNormalWeight(cell, neighborCell);
+          const arrow = new Arrow(cell, neighborCell, weight);
+          cell.neighbors.push({ cell: neighborCell, weight: this.getDistance(cell, neighborCell), arrow });
+        }
       }
     }
-    if (cell.col < this.numCol - 1 && cell.row > 0) {
-      const topRightNeighborCellIndex = (cell.row - 1) * this.numCol + (cell.col + 1)
-      const topRightNeighborCell = this.cells.get(topRightNeighborCellIndex)
-      if (topRightNeighborCell && topRightNeighborCell.type !== "obstacle") {
-        neighbors.push(topRightNeighborCell);
-        const weight = this.getNormalWeight(cell, topRightNeighborCell)
-        const arrow = new Arrow(cell, topRightNeighborCell, weight)
-        cell.neighbors.push({ cell: topRightNeighborCell, weight: this.getDistance(cell, topRightNeighborCell), arrow })
-      }
-    }
-    if (cell.col < this.numCol - 1) {
-      const rightNeighborCellIndex = (cell.row) * this.numCol + (cell.col + 1)
-      const rightNeighborCell = this.cells.get(rightNeighborCellIndex)
-      if (rightNeighborCell && rightNeighborCell.type !== "obstacle") {
-        neighbors.push(rightNeighborCell);
-        const weight = this.getNormalWeight(cell, rightNeighborCell)
-        const arrow = new Arrow(cell, rightNeighborCell, weight)
-        cell.neighbors.push({ cell: rightNeighborCell, weight: this.getDistance(cell, rightNeighborCell), arrow })
-      }
-    }
-    if (cell.col < this.numCol - 1 && cell.row < this.numRow - 1) {
-      const downRightNeighborCellIndex = (cell.row + 1) * this.numCol + (cell.col + 1)
-      const downRightNeighborCell = this.cells.get(downRightNeighborCellIndex)
-      if (downRightNeighborCell && downRightNeighborCell.type !== "obstacle") {
-        neighbors.push(downRightNeighborCell);
-        const weight = this.getNormalWeight(cell, downRightNeighborCell)
-        const arrow = new Arrow(cell, downRightNeighborCell, weight)
-        cell.neighbors.push({ cell: downRightNeighborCell, weight: this.getDistance(cell, downRightNeighborCell), arrow })
-      }
-    }
-    if (cell.row < this.numRow - 1) {
-      const downNeighborCellIndex = (cell.row + 1) * this.numCol + cell.col
-      const downNeighborCell = this.cells.get(downNeighborCellIndex)
-      if (downNeighborCell && downNeighborCell.type !== "obstacle") {
-        neighbors.push(downNeighborCell);
-        const weight = this.getNormalWeight(cell, downNeighborCell)
-        const arrow = new Arrow(cell, downNeighborCell, weight)
-        cell.neighbors.push({ cell: downNeighborCell, weight: this.getDistance(cell, downNeighborCell), arrow })
-      }
-    }
-    if (cell.col > 0 && cell.row < this.numRow - 1) {
-      const downLeftNeighborCellIndex = (cell.row + 1) * this.numCol + (cell.col - 1)
-      const downLeftNeighborCell = this.cells.get(downLeftNeighborCellIndex)
-      if (downLeftNeighborCell && downLeftNeighborCell.type !== "obstacle") {
-        neighbors.push(downLeftNeighborCell);
-        const weight = this.getNormalWeight(cell, downLeftNeighborCell)
-        const arrow = new Arrow(cell, downLeftNeighborCell, weight)
-        cell.neighbors.push({ cell: downLeftNeighborCell, weight: this.getDistance(cell, downLeftNeighborCell), arrow })
-      }
-    }
-    if (cell.col > 0) {
-      const leftNeighborCellIndex = (cell.row) * this.numCol + (cell.col - 1)
-      const leftNeighborCell = this.cells.get(leftNeighborCellIndex)
-      if (leftNeighborCell && leftNeighborCell.type !== "obstacle") {
-        neighbors.push(leftNeighborCell);
-        const weight = this.getNormalWeight(cell, leftNeighborCell)
-        const arrow = new Arrow(cell, leftNeighborCell, weight)
-        cell.neighbors.push({ cell: leftNeighborCell, weight: this.getDistance(cell, leftNeighborCell), arrow })
-      }
-    }
-    if (cell.col > 0 && cell.row > 0) {
-      const topLeftNeighborCellIndex = (cell.row - 1) * this.numCol + (cell.col - 1)
-      const topLeftNeighborCell = this.cells.get(topLeftNeighborCellIndex)
-      if (topLeftNeighborCell && topLeftNeighborCell.type !== "obstacle") {
-        neighbors.push(topLeftNeighborCell);
-        const weight = this.getNormalWeight(cell, topLeftNeighborCell)
-        const arrow = new Arrow(cell, topLeftNeighborCell, weight)
-        cell.neighbors.push({ cell: topLeftNeighborCell, weight: this.getDistance(cell, topLeftNeighborCell), arrow })
-      }
-    }
-    return neighbors;
   }
+
   show(p: p5) {
     for (let cell of this.cells.values()) {
       cell.show(p)
@@ -160,8 +104,13 @@ export class Grid implements Graph {
     return Array.from(this.cells.values()).filter(cell => cell.type === "highlight")
   }
 
-  toNumber(cell: GridCell) {
-    return this.numCol * cell.row + cell.col;
+  toNumber(cell: GridCell | { row: number, col: number }) {
+    if (cell instanceof GridCell) {
+      return this.numCol * cell.row + cell.col;
+    }
+    else {
+      return this.numCol * cell.row + cell.col;
+    }
   }
   toCell(index: number): GridCell | undefined {
     return this.cells.get(index)
