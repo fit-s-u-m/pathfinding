@@ -22,7 +22,7 @@ export class Arrow {
     const endX = this.end.location.x
     const endY = this.end.location.y
 
-    const radius = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2)
+    const radius = Math.abs(Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2) - this.end.cellSize / 2)
     const angle = Math.atan2((endY - startY), (endX - startX))
     const triangleSize = 10
     p.push()
@@ -43,7 +43,7 @@ export class Arrow {
     p.pop()
 
   }
-  drawDistance(p: p5, distance: string, size: number, color: COLOR = colors.primary as COLOR) {
+  drawDistance(p: p5, distance: string, size: number) {
     const startX = this.start.location.x
     const startY = this.start.location.y
     const endX = this.end.location.x
@@ -56,11 +56,10 @@ export class Arrow {
     p.translate(startX, startY)
     p.rotate(angle)
     p.textSize(size)
-    p.fill(color)
-    p.stroke(colors.text)
+    p.stroke(colors.primary)
     p.noFill()
     p.textAlign(p.CENTER)
-    if (Math.abs(angle) <= Math.PI * 3 / 2 && Math.abs(angle) >= Math.PI / 2) {
+    if (Math.abs(angle) <= Math.PI * 3 / 2 && Math.abs(angle) >= Math.PI / 2) { // rotate 180
       p.translate(radius / 2, 0)
       p.rotate(Math.PI)
       p.text(distance, 0, 0)

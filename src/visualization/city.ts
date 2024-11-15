@@ -11,7 +11,7 @@ export class City implements Cell {
   location: { x: number, y: number }
   project: Function
 
-  radius = 30
+  cellSize = 30
   color
   neighbors: { cell: Cell, weight: number, arrow: Arrow }[] = []
   type: CellType = "normal"
@@ -76,38 +76,38 @@ export class City implements Cell {
   showDistance(p: p5, getDistance: Function, size: number) {
     this.neighbors.forEach(neighbor => {
       const distance = getDistance(neighbor.cell, this) as number
-      neighbor.arrow.drawDistance(p, distance.toFixed(0), size, colors.accent as COLOR)
+      neighbor.arrow.drawDistance(p, distance.toFixed(0), size)
     })
   }
   isInCell(x: number, y: number) {
-    return Math.sqrt((x - this.location.x) ** 2 + (y - this.location.y) ** 2) <= this.radius
+    return Math.sqrt((x - this.location.x) ** 2 + (y - this.location.y) ** 2) <= this.cellSize
   }
   foucus(p: p5) {
     p.fill(colors.background)
-    p.circle(this.location.x, this.location.y, this.radius)
+    p.circle(this.location.x, this.location.y, this.cellSize)
   }
   show(p: p5) {
     p.push()
     if (this.type == "path") {
       p.drawingContext.shadowColor = "yellow"
       p.drawingContext.shadowBlur = 50
-      p.circle(this.location.x, this.location.y, this.radius)
-      p.circle(this.location.x, this.location.y, this.radius)
-      p.circle(this.location.x, this.location.y, this.radius)
-      p.circle(this.location.x, this.location.y, this.radius)
-      const textSize = p.map(this.radius, 0, 50, 2, 20) // TODO: adjust text size
+      p.circle(this.location.x, this.location.y, this.cellSize)
+      p.circle(this.location.x, this.location.y, this.cellSize)
+      p.circle(this.location.x, this.location.y, this.cellSize)
+      p.circle(this.location.x, this.location.y, this.cellSize)
+      const textSize = p.map(this.cellSize, 0, 50, 2, 20) // TODO: adjust text size
       this.showText(this.text, textSize, p)
     }
     if (this.type == "highlight") {
       p.drawingContext.shadowColor = "orange"
       p.drawingContext.shadowBlur = 20
-      p.circle(this.location.x, this.location.y, this.radius)
-      const textSize = p.map(this.radius, 0, 50, 2, 20) // TODO: adjust text size
+      p.circle(this.location.x, this.location.y, this.cellSize)
+      const textSize = p.map(this.cellSize, 0, 50, 2, 20) // TODO: adjust text size
       this.showText(this.text, textSize, p)
 
     }
     p.fill(this.color)
-    p.circle(this.location.x, this.location.y, this.radius)
+    p.circle(this.location.x, this.location.y, this.cellSize)
     p.pop()
     for (let neighbor of this.neighbors) {
       neighbor.arrow.show(p)
@@ -120,7 +120,7 @@ export class City implements Cell {
     p.push()
 
     p.fill(colors.text as COLOR)
-    p.stroke("white")
+    p.stroke(colors.black)
     p.textSize(size)
     p.textAlign(p.CENTER)
     p.text(text, this.location.x, this.location.y)

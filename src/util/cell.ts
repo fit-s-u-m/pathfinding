@@ -9,6 +9,7 @@ export interface Cell {
   type: CellType
   name: string
   text: string
+  cellSize: number
 
   show(p: p5): void
 

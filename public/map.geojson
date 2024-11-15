@@ -10,34 +10,54 @@
 		},
 		{
 			"type":"Feature",
-			"properties":{"name":"Desie"},
+			"properties":{"name":"Adama"},
 			"geometry":{
-				"coordinates":[39.63508773476295,11.181071965221307],
+				"coordinates":[39.26539638634753,8.544436201851752],
+				"type":"Point"}
+		},
+		{
+			"type":"Feature",
+			"properties":{"name":"Dessie"},
+			"geometry":{
+				"coordinates":[39.624766439744036,11.144116072612022],
 				"type":"Point"}
 		},
 		{
 			"type":"Feature",
 			"properties":{"name":"Bahir Dar"},
 			"geometry":{
-				"coordinates":[37.3899364764394,11.640055840870659],
+				"coordinates":[37.388224601118225,11.59496651869597],
 				"type":"Point"}},
 		{
 			"type":"Feature",
 			"properties":{"name":"Jimma"},
 			"geometry":{
-				"coordinates":[36.81364096628164,7.699631899927482],
+				"coordinates":[36.84787753729884,7.675615163147725],
 				"type":"Point"}},
 		{
 			"type":"Feature",
 			"properties":{"name":"Gambela"},
 			"geometry":{
-				"coordinates":[34.604508177343575,8.28221860703701],
+				"coordinates":[34.588406444470706,8.243037167281102],
 				"type":"Point"}},
 		{
 			"type":"Feature",
-			"properties":{"name":"Akobo"},
+			"properties":{"name":"Tepi"},
 			"geometry":{
-				"coordinates":[32.99568321148584,7.806699497480878],
+				"coordinates":[35.42181683235651,7.197073081067501],
+				"type":"Point"}},
+		{
+			"type":"Feature",
+			"properties":{"name":"Degehabur"},
+			"geometry":{
+				"coordinates":[43.55848116181474,8.220353414789031],
+				"type":"Point"}},
+
+		{
+			"type":"Feature",
+			"properties":{"name":"Jinka"},
+			"geometry":{
+				"coordinates":[36.56518385727051, 5.785999831395628],
 				"type":"Point"}},
 		{
 			"type":"Feature",
@@ -73,7 +93,7 @@
 			"type":"Feature",
 			"properties":{"name":"Hawassa"},
 			"geometry":{
-				"coordinates":[38.458233120201214,7.049361325629789],
+				"coordinates":[38.476397465141616,7.06528958620855],
 				"type":"Point"}},
 		{
 			"type":"Feature",
@@ -113,12 +133,6 @@
 				"type":"Point"}},
 		{
 			"type":"Feature",
-			"properties":{"name":"Bishoftu"},
-			"geometry":{
-				"coordinates":[38.97029650253634,8.739116672294656],
-				"type":"Point"}},
-		{
-			"type":"Feature",
 			"properties":{"name":"Hosaena"},
 			"geometry":{
 				"coordinates":[37.852868644181996,7.550420259585792],
@@ -139,7 +153,7 @@
 			"type":"Feature",
 			"properties":{"name":"Nekemte"},
 			"geometry":{
-				"coordinates":[36.548146271162494,9.090693505261768],
+				"coordinates":[36.54815699999838,9.09052408276672],
 				"type":"Point"}},
 		{
 			"type":"Feature",
@@ -209,12 +223,6 @@
 				"type":"Point"}},
 		{
 			"type":"Feature",
-			"properties":{"name":"Omo National park"},
-			"geometry":{
-				"coordinates":[35.84292460332557,5.84752116943271],
-				"type":"Point"}},
-		{
-			"type":"Feature",
 			"properties":{"name":"Metemma"},
 			"geometry":{
 				"coordinates":[36.1550307741733,12.960322545249568],
@@ -235,13 +243,19 @@
 			"type":"Feature",
 			"properties":{"name":"Humera"},
 			"geometry":{
-				"coordinates":[36.60887318650927,14.287661007547499],
+				"coordinates":[36.60884099999939,14.287688218394877],
 				"type":"Point"}},
 		{
 			"type":"Feature",
 			"properties":{"name":"Ambo"},
 			"geometry":{
 				"coordinates":[37.855505373016314,8.982162284980888],
+				"type":"Point"}},
+		{
+			"type":"Feature",
+			"properties":{"name":"Awash"},
+			"geometry":{
+				"coordinates":[40.16767360210301,8.992496159938028],
 				"type":"Point"}}
 	]
 }

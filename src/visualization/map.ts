@@ -6,11 +6,14 @@ import p5 from "p5";
 import { Arrow } from "./arrow";
 import { History } from "../util/history";
 import { Action } from "../util/action";
+import { colors } from "../util/colors";
+import { Description } from "./description";
 
 export class Country implements Graph {
   start: City | null = null;
   end: City | null = null;
   cellType: CellType = "normal"
+  description: Description
 
   algorithsmPathCells: Cell[] = [];
   currentScan: Cell | null = null;
@@ -19,8 +22,6 @@ export class Country implements Graph {
   canvasHeight: number
   highlightedArrows: Arrow[] = []
 
-  offsetX: number = 0
-  offsetY: number = 0
   cities: City[] = []
   countryDatas: [number, number][] = []
 
@@ -36,6 +37,10 @@ export class Country implements Graph {
       const location = cityData.geometry.coordinates
       this.cities.push(new City({ name, location }, this.project.bind(this))) // create cities
     }
+
+    const mostLeft = Math.max(...this.countryDatas.map(coord => coord[0]))
+    const mostBottom = Math.min(...this.countryDatas.map(coord => coord[1]))
+    this.description = new Description(mostLeft, mostBottom, canvasWidth, canvasHeight, this.project.bind(this))
   }
   setStart(x: number, y: number): void {
     const cell = this.getCell(x, y)
@@ -181,8 +186,8 @@ export class Country implements Graph {
     const scale = 0.8 * Math.min(this.canvasWidth / mapWidth, this.canvasHeight / mapHeight);
 
     // Calculate x and y positions using the inverted scale, centering, and offset
-    const x = ((longitude - centerLng) * scale) + this.offsetX + this.canvasWidth / 2;
-    const y = ((centerLat - latitude) * scale) + this.offsetY + this.canvasHeight / 2;
+    const x = ((longitude - centerLng) * scale) + this.canvasWidth / 2;
+    const y = ((centerLat - latitude) * scale) + this.canvasHeight / 2;
 
     return { x, y };
   }
@@ -213,6 +218,7 @@ export class Country implements Graph {
       city.highlightArrow(p)
       city.showDistance(p, this.getActualDistance.bind(this), size)
       city.showText(city.name, size * 2.5, p)
+      this.description.show(p, city, city.neighbors.map(neighbor => ({ cell: neighbor.cell, dist: (this.getDistance(city, neighbor.cell as City)) })))
     }
   }
   private toRadians(degree: number) {
@@ -245,7 +251,7 @@ export class Country implements Graph {
     for (let coord of this.countryDatas) {
       const { x, y } = this.project({ x: coord[0], y: coord[1] })
       p.stroke("black")
-      // p.fill("black")
+      p.fill(colors.black)
       p.vertex(x, y)
     }
     p.endShape()
@@ -276,8 +282,9 @@ export class Country implements Graph {
     this.canvasHeight = height
     const min = Math.min(width, height)
     for (let city of this.cities) {
-      city.radius = min / 30
+      city.cellSize = min / 30
       city.resize()
     }
+    this.description.resize(width, height)
   }
 }

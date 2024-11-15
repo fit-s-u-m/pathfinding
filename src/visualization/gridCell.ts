@@ -59,7 +59,6 @@ export class GridCell implements Cell {
     this.setState("path", colors.path_grid as COLOR);
   }
   highlight(color: COLOR): Action {
-    // if (this.type == "highlight" && this.color == color) return
     const doHighlight = (color: COLOR) => this.setState("highlight", color);
     const undoHighlight = (prevType: CellType, prevColor: COLOR) => this.setState(prevType, prevColor);
     const action = new Action(doHighlight.bind(this, color), undoHighlight.bind(this, this.type, this.color))
