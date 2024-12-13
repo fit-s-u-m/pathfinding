@@ -159,7 +159,7 @@ export class Country implements Graph {
         if (city !== otherCity) {
           const weight = this.getNormalWeight(city, otherCity)
           const random = Math.random()
-          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.2 && weight < 0.18) {
+          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.5 && weight < 0.18) {
             city.makeConnection(otherCity, weight)
           }
         }

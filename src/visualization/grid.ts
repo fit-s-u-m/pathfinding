@@ -2,6 +2,7 @@ import p5 from "p5";
 import { Cell } from "../util/cell";
 import { Graph } from "../dataStructures/Graph";
 import { GridCell } from "./gridCell";
+import { CellPool } from "./gridCellPool";
 import { Arrow } from "./arrow";
 
 import { Action, ComposedAction } from "../util/action";
@@ -40,18 +41,33 @@ export class Grid implements Graph {
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
     this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.margin) / 2;
 
+    CellPool.getInstance().makePool(this.numCol*this.numRow)
+
     this.makeGrid()
   }
   makeGrid() {
-    for (let row = 0; row < this.numRow; row++) {
-      for (let col = 0; col < this.numCol; col++) {
-        const x = col * this.cellSize + this.offsetX + this.cellSize / 2;
-        const y = row * this.cellSize + this.offsetY + this.cellSize / 2;
-        const index = row * this.numCol + col
-        const cell = new GridCell(x, y, this.cellSize, row, col, index.toString())
-        this.cells.set(index, cell)
-      }
-    }
+    // for (let row = 0; row < this.numRow; row++) {
+    //   for (let col = 0; col < this.numCol; col++) {
+    //     const x = col * this.cellSize + this.offsetX + this.cellSize / 2;
+    //     const y = row * this.cellSize + this.offsetY + this.cellSize / 2;
+    //     const index = row * this.numCol + col
+    //     const cell = this.pool.getCells(1)[0]
+    //     const cell = new GridCell(x, y, this.cellSize, row, col, index.toString())
+    //     this.cells.set(index, cell)
+    //   }
+    // }
+    const cells = CellPool
+    .getInstance()
+    .getCells(this.numCol*this.numRow)
+
+    cells.forEach((cell, index) => {
+      const row = Math.floor(index / this.numCol)
+      const col = index % this.numCol
+      const x = col * this.cellSize + this.offsetX + this.cellSize / 2;
+      const y = row * this.cellSize + this.offsetY + this.cellSize / 2;
+      cell.init(x, y, this.cellSize, row, col, index.toString())
+      this.cells.set(index, cell)
+    })
   }
   createNeighbors() {
     for (let cell of this.cells.values()) {
@@ -283,7 +299,6 @@ export class Grid implements Graph {
   }
   
   clearCells() {
-    // If cells hold resources that need explicit cleanup, handle it here
     for (let cell of this.cells.values()) {
         cell.clearData(); // Destroy graphical elements or other resources
     }
@@ -308,15 +323,21 @@ export class Grid implements Graph {
     
     // Clear old grid data
     this.clearCells();
-    console.log(this.numCol, this.numRow, this.canvasWidth, this.canvasHeight)
+    if(this.numCol*this.numRow > CellPool.getInstance().size()){
+      const diff = this.numCol*this.numRow - CellPool.getInstance().size()
+      CellPool.getInstance().makePool(diff)
+    }
 
     this.makeGrid()
     this.createNeighbors()
     History.getInstance().destroy()
+
   }
   resize(width: number, height: number) {
     this.canvasWidth = width - this.margin;
     this.canvasHeight = height - this.margin;
+    console.log(CellPool.getInstance().size())
     this.update();
+    console.log(CellPool.getInstance().size())
   }
 }

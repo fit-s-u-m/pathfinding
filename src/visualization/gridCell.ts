@@ -6,18 +6,19 @@ import { Arrow } from "./arrow"
 import { Action } from "../util/action"
 
 export class GridCell implements Cell {
-  location: { x: number, y: number }
   neighbors: { cell: GridCell, weight: number, arrow: Arrow }[] = []
   name: string = ""
   text: string = ""
   type: CellType = "normal"
   color: COLOR = colors.background as COLOR
-  cellSize: number
-  row: number
-  col: number
+  location: { x: number, y: number } = { x: 0, y: 0 }
+  cellSize: number = 0
+  row: number = 0
+  col: number = 0
   active: boolean = false
 
-  constructor(x: number, y: number, cellSize: number, row: number, col: number, name: string) {
+  init(x: number, y: number, cellSize: number, row: number, col: number, name: string) {
+    this.active = true
     this.location = { x, y }
     this.cellSize = cellSize
     this.row = row
@@ -98,9 +99,9 @@ export class GridCell implements Cell {
     p.pop()
   }
   clearData(): void {
-  // Clear references to neighbors
+    // Clear references to neighbors
     for (let neighbor of this.neighbors) {
-      if (neighbor.arrow ) {
+      if (neighbor.arrow) {
         neighbor.arrow.clearData(); // Ensure arrow resources are cleaned up
       }
     }
@@ -111,6 +112,7 @@ export class GridCell implements Cell {
     this.name = "";
     this.type = "normal";
     this.color = colors.background as COLOR;
-}
+    this.active = false
+  }
 
 }
