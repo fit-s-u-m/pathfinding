@@ -1,9 +1,7 @@
-import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
-import { colors } from "../util/colors";
 import { ComposedAction } from "../util/action";
 import { History } from "../util/history";
 
@@ -57,7 +55,6 @@ export class Astar implements PathFindingAlgorithm {
 
           const fScore = (this.gScore.get(graph.toNumber(cell)) || 0) + hScore
 
-          color = colors.primary as COLOR
           weight = fScore
 
           this.previous.set(graph.toNumber(cell), current);
@@ -65,7 +62,6 @@ export class Astar implements PathFindingAlgorithm {
         }
         else {
 
-          color = colors.secondary as COLOR
           const hScore = graph.getDistance(cell, end)
           weight = prevWeight + hScore
         }
@@ -74,7 +70,10 @@ export class Astar implements PathFindingAlgorithm {
           break
         }
 
-        const action = cell.highlight(color)
+        const endDist = graph.getDistance(cell, end)
+        const startDist = graph.getDistance(start, end)
+        const percent = Math.min(endDist, startDist) / Math.max(endDist, startDist)
+        const action = cell.highlight(percent)
         composedAction.addAction(action)
         cell.text = weight.toFixed(1)
         graph.currentScan = cell

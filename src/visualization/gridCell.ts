@@ -4,6 +4,7 @@ import { Cell } from "../util/cell"
 import { colors } from "../util/colors"
 import { Arrow } from "./arrow"
 import { Action } from "../util/action"
+import { lerpColor } from "../util/util"
 
 export class GridCell implements Cell {
   neighbors: { cell: GridCell, weight: number, arrow: Arrow }[] = []
@@ -28,6 +29,7 @@ export class GridCell implements Cell {
   show(p: p5) {
     p.fill(this.color)
     p.stroke(colors.secondary)
+
     const borderRad = this.cellSize / 4
     p.square(this.location.x - this.cellSize / 2, this.location.y - this.cellSize / 2, this.cellSize, borderRad)
     const textSize = p.map(this.cellSize, 0, 50, 2, 20) // TODO: adjust text size
@@ -60,7 +62,8 @@ export class GridCell implements Cell {
   beInPath(): void {
     this.setState("path", colors.path_grid as COLOR);
   }
-  highlight(color: COLOR): Action {
+  highlight(distance: number): Action {
+    const color = lerpColor(colors.primary as COLOR, colors.background as COLOR, distance)
     const doHighlight = (color: COLOR) => this.setState("highlight", color);
     const undoHighlight = (prevType: CellType, prevColor: COLOR) => this.setState(prevType, prevColor);
     const action = new Action(doHighlight.bind(this, color), undoHighlight.bind(this, this.type, this.color))

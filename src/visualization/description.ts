@@ -21,10 +21,10 @@ export class Description {
   show(p: p5, city: Cell, neighbors: { cell: Cell, dist: number }[]) {
     if (this.width < 300) return
 
-    p.fill("black")
-    p.stroke("white")
+    p.fill(colors.primary_color[800])
+    p.stroke(colors.primary_color[50])
     p.translate(this.xPos, this.yPos)
-    p.rect(0, 0, this.width, this.height)
+    p.rect(0, 0, this.width, this.height,20)
 
     p.fill("white")
     p.textAlign(p.CENTER)
@@ -37,8 +37,8 @@ export class Description {
     p.textSize(this.fontSize)
 
     // Neighbors
-    p.fill(colors.secondary)
-    p.stroke(colors.secondary)
+    p.fill(colors.background_color[500])
+    p.stroke(colors.background_color[500])
     p.textSize(this.fontSize * 1.5)
     p.text("Neighbors", 0, 0)
 

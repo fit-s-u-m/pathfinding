@@ -1,5 +1,3 @@
-import { COLOR } from "../type";
-import { colors } from "../util/colors";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { Queue } from "../dataStructures/Queue";
 import { Graph } from "../dataStructures/Graph";
@@ -24,6 +22,7 @@ export class BreadthFirst implements PathFindingAlgorithm {
     this.visited.add(graph.toNumber(start));
     this.queue.enqueue(start);
     let found = false;
+    let counter = 0
 
     while (!this.queue.isEmpty() && !found) {
       const current = this.queue.dequeue();
@@ -36,10 +35,10 @@ export class BreadthFirst implements PathFindingAlgorithm {
 
       const composedAction = new ComposedAction();
 
-      if (current !== start) {
-        const action = current.highlight(colors.secondary as COLOR)
-        composedAction.addAction(action)
-      }
+      // if (current !== start) {
+      //   const action = current.highlight()
+      //   composedAction.addAction(action)
+      // }
 
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
@@ -52,11 +51,16 @@ export class BreadthFirst implements PathFindingAlgorithm {
           found = true
           break
         }
-        const color = colors.primary as COLOR
-        cell.text = graph.getDistance(current, cell).toFixed(1)
+        cell.text = counter.toFixed(0)
 
-        const action = cell.highlight(color)
+        const dist = graph.getDistance(current,end) 
+        const startDist = graph.getDistance(current,start) 
+        const percent = Math.min(dist,startDist)/Math.max(dist,startDist)
+        // const percent = 10/graph.getDistance(current,end)
+        console.log(percent)
+        const action = cell.highlight(percent)
         composedAction.addAction(action)
+        counter ++
 
         yield;
       }

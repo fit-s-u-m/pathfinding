@@ -22,6 +22,6 @@ export interface Cell {
   isInCell(x: number, y: number): void
 
   showText(text: string, size: number, p: p5): void
-  highlight(color: COLOR): Action
+  highlight(distance:number): Action
 
 }

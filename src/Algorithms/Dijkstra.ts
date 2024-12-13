@@ -1,9 +1,7 @@
-import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
-import { colors } from "../util/colors";
 
 import { History } from "../util/history";
 import { ComposedAction } from "../util/action";
@@ -37,10 +35,10 @@ export class Dijkstra implements PathFindingAlgorithm {
 
       const composedAction = new ComposedAction();
 
-      if (graph.toNumber(current) !== graph.toNumber(start)) {
-        const action = current.highlight(colors.accent as COLOR)
-        composedAction.addAction(action)
-      }
+      // if (graph.toNumber(current) !== graph.toNumber(start)) {
+      //   const action = current.highlight()
+      //   composedAction.addAction(action)
+      // }
 
       for (const cell of neighbors) {
         if (this.visited.has(graph.toNumber(cell))) continue;
@@ -54,7 +52,6 @@ export class Dijkstra implements PathFindingAlgorithm {
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
           this.shortestDistance.set(graph.toNumber(cell), runningWeight)
 
-          const color = colors.primary as COLOR
           const weight = runningWeight
 
           this.previous.set(graph.toNumber(cell), current);
@@ -66,12 +63,14 @@ export class Dijkstra implements PathFindingAlgorithm {
           }
 
           cell.text = weight.toFixed(1)
-          const action = cell.highlight(color)
+          const endDist = graph.getDistance(cell,end)
+          const startDist = graph.getDistance(start,end)
+          const percent = Math.min(endDist,startDist) / Math.max(endDist,startDist)
+          const action = cell.highlight(percent)
           composedAction.addAction(action)
 
         }
         else {
-          const color = colors.secondary as COLOR
           const weight = prevWeight
           if (graph.toNumber(cell) === graph.toNumber(end)) {
             found = true
@@ -79,7 +78,10 @@ export class Dijkstra implements PathFindingAlgorithm {
           }
 
           cell.text = weight.toFixed(1)
-          const action = cell.highlight(color)
+          const endDist = graph.getDistance(cell,end)
+          const startDist = graph.getDistance(start,end)
+          const percent = Math.min(endDist,startDist) / Math.max(endDist,startDist)
+          const action = cell.highlight(percent)
           composedAction.addAction(action)
         }
 

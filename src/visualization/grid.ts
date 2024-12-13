@@ -323,6 +323,8 @@ export class Grid implements Graph {
     
     // Clear old grid data
     this.clearCells();
+
+    // add more to pool if needed
     if(this.numCol*this.numRow > CellPool.getInstance().size()){
       const diff = this.numCol*this.numRow - CellPool.getInstance().size()
       CellPool.getInstance().makePool(diff)
@@ -332,12 +334,11 @@ export class Grid implements Graph {
     this.createNeighbors()
     History.getInstance().destroy()
 
+    console.log(CellPool.getInstance().size())
   }
   resize(width: number, height: number) {
     this.canvasWidth = width - this.margin;
     this.canvasHeight = height - this.margin;
-    console.log(CellPool.getInstance().size())
     this.update();
-    console.log(CellPool.getInstance().size())
   }
 }

@@ -1,9 +1,7 @@
-import { COLOR } from "../type";
 import { Graph } from "../dataStructures/Graph";
 import { PathFindingAlgorithm } from "../util/pathFindingAlgorithms";
 import { PQueue } from "../dataStructures/PriorityQueue";
 import { Cell } from "../util/cell";
-import { colors } from "../util/colors";
 import { History } from "../util/history";
 import { ComposedAction } from "../util/action";
 
@@ -40,7 +38,6 @@ export class Gready implements PathFindingAlgorithm {
 
         const heuristic = graph.getDistance(cell, end)
 
-        let color: COLOR = colors.secondary as COLOR
 
         this.Pqueue.enqueue(cell, heuristic);
         this.visited.add(graph.toNumber(cell));
@@ -51,7 +48,10 @@ export class Gready implements PathFindingAlgorithm {
           break
         }
 
-        const action = cell.highlight(color)
+        const endDist = graph.getDistance(cell, end)
+        const startDist = graph.getDistance(start, end)
+        const percent = Math.min(endDist, startDist) / Math.max(endDist, startDist)
+        const action = cell.highlight(percent)
         composedAction.addAction(action)
         cell.text = heuristic.toFixed(1)
       }

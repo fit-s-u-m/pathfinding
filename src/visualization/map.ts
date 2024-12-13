@@ -250,14 +250,16 @@ export class Country implements Graph {
 
 
   show(p: p5): void {
+    // ethiopia map
     p.beginShape()
     for (let coord of this.countryDatas) {
       const { x, y } = this.project({ x: coord[0], y: coord[1] })
       p.stroke("black")
-      p.fill(colors.black)
+      p.fill(colors.primary_color[900])
       p.vertex(x, y)
     }
     p.endShape()
+
     for (let city of this.cities) {
       city.show(p)
     }

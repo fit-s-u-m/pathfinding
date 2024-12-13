@@ -4,6 +4,7 @@ import { Cell } from "../util/cell";
 import { colors } from "../util/colors";
 import { Arrow } from "./arrow";
 import { Action } from "../util/action";
+import { lerpColor } from "../util/util";
 
 export class City implements Cell {
   name: string
@@ -59,7 +60,8 @@ export class City implements Cell {
   getType() {
     return this.type
   }
-  highlight(color: COLOR): Action {
+  highlight(percent:number): Action {
+    const color = lerpColor(colors.primary as COLOR,colors.background as COLOR,percent)
     const beHighlight = (color: COLOR) => {
       this.color = color
       this.type = "highlight"
@@ -90,7 +92,7 @@ export class City implements Cell {
     p.push()
     if (this.type == "path") {
       p.drawingContext.shadowColor = "yellow"
-      p.drawingContext.shadowBlur = 50
+      p.drawingContext.shadowBlur = 30
       p.circle(this.location.x, this.location.y, this.cellSize)
       p.circle(this.location.x, this.location.y, this.cellSize)
       p.circle(this.location.x, this.location.y, this.cellSize)
@@ -99,7 +101,7 @@ export class City implements Cell {
       this.showText(this.text, textSize, p)
     }
     if (this.type == "highlight") {
-      p.drawingContext.shadowColor = "orange"
+      p.drawingContext.shadowColor = colors.background_color[500]
       p.drawingContext.shadowBlur = 20
       p.circle(this.location.x, this.location.y, this.cellSize)
       const textSize = p.map(this.cellSize, 0, 50, 2, 20) // TODO: adjust text size
@@ -121,6 +123,18 @@ export class City implements Cell {
 
     p.fill(colors.text as COLOR)
     p.stroke(colors.black)
+    if(this.type =="path"){
+      p.fill(colors.path as COLOR)
+      p.stroke(colors.path)
+    }
+    if(this.type =="start"){
+      p.fill(colors.start as COLOR)
+      p.stroke(colors.start)
+    }
+    if(this.type =="end"){
+      p.fill(colors.end as COLOR)
+      p.stroke(colors.end)
+    }
     p.textSize(size)
     p.textAlign(p.CENTER)
     p.text(text, this.location.x, this.location.y)
