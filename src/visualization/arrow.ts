@@ -9,20 +9,22 @@ export class Arrow {
   color: COLOR = colors.secondary as COLOR
   thickness: number = 1
   weight: number
-  start: Cell
-  end: Cell
+  start: Cell | null
+  end: Cell | null
   constructor(start: Cell, end: Cell, weight: number) {
     this.start = start
     this.end = end
     this.weight = weight
   }
   drawTraingle(p: p5, color: COLOR, thickness: number) {
+    if(!this.start || !this.end) return
     const startX = this.start.location.x
     const startY = this.start.location.y
     const endX = this.end.location.x
     const endY = this.end.location.y
 
-    const radius = Math.abs(Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2) - this.end.cellSize / 2)
+    // const radius = Math.abs(Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2) - this.end.cellSize / 2)
+    const radius = Math.abs(Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2))
     const angle = Math.atan2((endY - startY), (endX - startX))
     const triangleSize = 10
     p.push()
@@ -44,6 +46,7 @@ export class Arrow {
 
   }
   drawDistance(p: p5, distance: string, size: number) {
+    if(!this.start || !this.end) return
     const startX = this.start.location.x
     const startY = this.start.location.y
     const endX = this.end.location.x
@@ -92,6 +95,14 @@ export class Arrow {
     this.arrowType = "path"
     this.color = colors.path as COLOR
     this.thickness = 10
+  }
+  clearData() {
+    this.start = null
+    this.end = null
+    this.weight = 0
+    this.arrowType = "normal"
+    this.color = colors.secondary as COLOR
+    this.thickness = 1
   }
   beNormal() {
     this.arrowType = "normal"

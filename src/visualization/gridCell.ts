@@ -15,6 +15,7 @@ export class GridCell implements Cell {
   cellSize: number
   row: number
   col: number
+  active: boolean = false
 
   constructor(x: number, y: number, cellSize: number, row: number, col: number, name: string) {
     this.location = { x, y }
@@ -96,5 +97,20 @@ export class GridCell implements Cell {
 
     p.pop()
   }
+  clearData(): void {
+  // Clear references to neighbors
+    for (let neighbor of this.neighbors) {
+      if (neighbor.arrow ) {
+        neighbor.arrow.clearData(); // Ensure arrow resources are cleaned up
+      }
+    }
+    this.neighbors = []; // Clear neighbors array
+
+    // Clear any other data
+    this.text = "";
+    this.name = "";
+    this.type = "normal";
+    this.color = colors.background as COLOR;
+}
 
 }

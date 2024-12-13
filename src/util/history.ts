@@ -54,4 +54,8 @@ export class History {
       if (redo) this.undoStack.push(redo);
     }
   }
+  destroy(){
+    this.undoStack= new Stack()
+    this.redoStack = new Stack()
+  }
 }

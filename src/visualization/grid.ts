@@ -15,8 +15,8 @@ export class Grid implements Graph {
   start: GridCell | null = null;
   end: GridCell | null = null;
 
-  numRow: number = 20;
-  numCol: number = 20;
+  numRow: number;
+  numCol: number;
   cellSize: number;
 
   currentScan: GridCell | null = null
@@ -28,16 +28,17 @@ export class Grid implements Graph {
   margin: number = 50
 
   cells: Map<number, GridCell> = new Map()
-  constructor(canvasWidth: number, canvasHeight: number, numRow: number, numCol: number) {
+  constructor(canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth - this.margin;
-    this.canvasHeight = canvasHeight;
+    this.canvasHeight = canvasHeight - this.margin;
 
-    this.numRow = numRow
-    this.numCol = numCol
+    this.cellSize = 25 // TODO: calculate acccording to window size
 
-    this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
+    this.numRow = Math.floor(this.canvasHeight / this.cellSize)
+    this.numCol = Math.floor(this.canvasWidth / this.cellSize)
+
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
-    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
+    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.margin) / 2;
 
     this.makeGrid()
   }
@@ -280,21 +281,42 @@ export class Grid implements Graph {
       return new Action(() => { }, () => { })
     }
   }
+  
+  clearCells() {
+    // If cells hold resources that need explicit cleanup, handle it here
+    for (let cell of this.cells.values()) {
+        cell.clearData(); // Destroy graphical elements or other resources
+    }
+
+    // Clear the map
+    this.cells.clear();
+
+    // Reset other related properties if needed
+    this.start = null;
+    this.end = null;
+    this.algorithsmPathCells = [];
+    this.highlightedArrows = [];
+  }
+
 
   update() {
-    this.cellSize = Math.min(this.canvasWidth / this.numCol, this.canvasHeight / this.numRow);
+    this.numRow = Math.floor(this.canvasHeight / this.cellSize)
+    this.numCol = Math.floor(this.canvasWidth / this.cellSize)
     this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
-    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow) / 2;
+    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.margin) / 2;
 
-    for (let cell of this.cells.values()) {
-      cell.cellSize = this.cellSize
-      cell.location.x = cell.col * this.cellSize + this.offsetX + this.cellSize / 2
-      cell.location.y = cell.row * this.cellSize + this.offsetY + this.cellSize / 2
-    }
+    
+    // Clear old grid data
+    this.clearCells();
+    console.log(this.numCol, this.numRow, this.canvasWidth, this.canvasHeight)
+
+    this.makeGrid()
+    this.createNeighbors()
+    History.getInstance().destroy()
   }
   resize(width: number, height: number) {
     this.canvasWidth = width - this.margin;
-    this.canvasHeight = height;
+    this.canvasHeight = height - this.margin;
     this.update();
   }
 }

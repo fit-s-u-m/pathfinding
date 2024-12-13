@@ -11,7 +11,7 @@ export class Ui {
 
   runButton: p5.Element[] | null = null
 
-  clearBoard: p5.Element | null = null
+  clearBoards: p5.Element[] | null = null
   visual: p5.Element | null = null
   visualMobile: p5.Element | null = null
 
@@ -30,7 +30,7 @@ export class Ui {
     const algorithmMobile = p.select("#algorithms-mobile");
     const visualMobile = p.select("#visual-mobile")
 
-    const clearboard = p.select(".clear-board")
+    const clearboard = p.selectAll(".clear-board")
     const prev = p.select("#prev")
     const next = p.select("#next")
 
@@ -48,7 +48,7 @@ export class Ui {
     this.visualMobile = visualMobile
     this.algorithmMobile = algorithmMobile
 
-    this.clearBoard = clearboard;
+    this.clearBoards = clearboard;
     this.prev = prev
     this.next = next
 
@@ -90,10 +90,12 @@ export class Ui {
     })
   }
   clearBoardButton(update: Function) {
-    if (!this.clearBoard) return
-    this.clearBoard.mouseClicked(() => {
-      update()
-    })
+    if (!this.clearBoards) return
+    for (let clearButton of this.clearBoards) {
+      clearButton.mousePressed(() => {
+        update()
+      })
+    }
   }
   updateAlgorithm(update: Function) {
     this.algorithm?.elt.addEventListener("change", () => {
@@ -131,6 +133,7 @@ export class Ui {
     if (!this.runButton) return
     this.runButton.forEach((button) => {
       button.mouseClicked(() => {
+        console.log("run button");
         update()
       })
     })

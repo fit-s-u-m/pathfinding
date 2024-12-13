@@ -43,7 +43,7 @@ const drawing = (p: p5) => {
     console.log(ui.selectedVisual)
 
     if (ui.selectedVisual === "Grid")
-      graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
+      graph = new Grid(app.clientWidth, app.clientHeight);
     else
       graph = new Country(geoJsonCities, getJsoncountry, app.clientWidth, app.clientHeight)
 
@@ -147,7 +147,7 @@ const drawing = (p: p5) => {
   function updateVisual(selectedVisual: "Grid" | "Map") {
     if (!app || !geoJsonCities) return
     if (selectedVisual === "Grid") {
-      graph = new Grid(app.clientWidth, app.clientHeight, 20, 50);
+      graph = new Grid(app.clientWidth, app.clientHeight);
     }
     else {
       graph = new Country(geoJsonCities, getJsoncountry, app.clientWidth, app.clientHeight)
