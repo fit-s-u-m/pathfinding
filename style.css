@@ -19,3 +19,33 @@ body {
 	flex: 1;
 	margin: 0;
 }
+/* Hover and focus styles for options */
+.select{
+  @apply bg-background-color-500 text-primary-color-700
+  font-bold select-md select-ghost w-full rounded-lg ;
+}
+.select:hover, .select:focus {
+  @apply bg-blue-100 bg-primary-color-800 text-background-color-50 outline-none ring-0;
+}
+
+.button-outline{
+  @apply btn btn-sm bg-background-color-500 text-primary-color-900 border-primary-color-900;
+}
+.button-outline:hover{
+  @apply bg-primary-color-900 text-background-color-50;
+}
+
+.button-solid{
+    @apply inline-flex items-center justify-center h-10 gap-2 px-6
+            text-sm font-medium tracking-wide transition duration-300 
+            justify-self-center whitespace-nowrap
+}
+.button-solid:hover,.button-solid:focus{
+  @apply bg-primary-color-900 text-background-color-50 font-bold;
+}
+.button-selected{
+    @apply bg-primary-color-900 text-background-color-50
+}
+.button-not-selected{
+    @apply bg-background-color-500 text-primary-color-900
+}
