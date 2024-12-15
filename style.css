@@ -2,24 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html,body {
 	background-color: #A2999E;
 	margin: 0;
-	overflow: hidden;
+	padding:0;
+	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	min-height: 100vh;
-}
-
-.navbar {
-	flex-shrink: 0;
+	box-sizing: border-box;
 }
 
 #app {
-	flex: 1;
 	margin: 0;
-}
-/* Hover and focus styles for options */
+	width: 100%;
+	flex: 1;
+	overflow:hidden;
+  }
+
 .select{
   @apply bg-background-color-500 text-primary-color-700
   font-bold select-md select-ghost w-full rounded-lg ;

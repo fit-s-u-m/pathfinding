@@ -24,38 +24,24 @@ export class Grid implements Graph {
   algorithsmPathCells: GridCell[] = []
   highlightedArrows: Arrow[] = []
 
-  offsetX: number;
-  offsetY: number;
-  margin: number = 50
+  offsetX: number = 50;
+  offsetY: number =50;
 
   cells: Map<number, GridCell> = new Map()
   constructor(canvasWidth: number, canvasHeight: number) {
-    this.canvasWidth = canvasWidth - this.margin;
-    this.canvasHeight = canvasHeight - this.margin;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
 
     this.cellSize = 25 // TODO: calculate acccording to window size
 
-    this.numRow = Math.floor(this.canvasHeight / this.cellSize)
-    this.numCol = Math.floor(this.canvasWidth / this.cellSize)
-
-    this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
-    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.margin) / 2;
+    this.numRow = Math.floor( (this.canvasHeight - 2*this.offsetX) / this.cellSize)
+    this.numCol = Math.floor( (this.canvasWidth  - 2*this.offsetY) / this.cellSize)
 
     CellPool.getInstance().makePool(this.numCol*this.numRow)
 
     this.makeGrid()
   }
   makeGrid() {
-    // for (let row = 0; row < this.numRow; row++) {
-    //   for (let col = 0; col < this.numCol; col++) {
-    //     const x = col * this.cellSize + this.offsetX + this.cellSize / 2;
-    //     const y = row * this.cellSize + this.offsetY + this.cellSize / 2;
-    //     const index = row * this.numCol + col
-    //     const cell = this.pool.getCells(1)[0]
-    //     const cell = new GridCell(x, y, this.cellSize, row, col, index.toString())
-    //     this.cells.set(index, cell)
-    //   }
-    // }
     const cells = CellPool
     .getInstance()
     .getCells(this.numCol*this.numRow)
@@ -315,30 +301,25 @@ export class Grid implements Graph {
 
 
   update() {
-    this.numRow = Math.floor(this.canvasHeight / this.cellSize)
-    this.numCol = Math.floor(this.canvasWidth / this.cellSize)
-    this.offsetX = (this.canvasWidth - this.cellSize * this.numCol + this.margin) / 2;
-    this.offsetY = (this.canvasHeight - this.cellSize * this.numRow + this.margin) / 2;
-
+    this.numRow = Math.floor( (this.canvasHeight - 2*this.offsetX) / this.cellSize)
+    this.numCol = Math.floor( (this.canvasWidth  - 2*this.offsetY) / this.cellSize)
     
     // Clear old grid data
     this.clearCells();
 
     // add more to pool if needed
     if(this.numCol*this.numRow > CellPool.getInstance().size()){
-      const diff = this.numCol*this.numRow - CellPool.getInstance().size()
-      CellPool.getInstance().makePool(diff)
+      const numRemaingCell = this.numCol*this.numRow - CellPool.getInstance().size()
+      CellPool.getInstance().makePool(numRemaingCell)
     }
 
     this.makeGrid()
     this.createNeighbors()
     History.getInstance().destroy()
-
-    console.log(CellPool.getInstance().size())
   }
   resize(width: number, height: number) {
-    this.canvasWidth = width - this.margin;
-    this.canvasHeight = height - this.margin;
+    this.canvasWidth = width
+    this.canvasHeight = height
     this.update();
   }
 }

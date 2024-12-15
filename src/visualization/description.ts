@@ -51,7 +51,7 @@ export class Description {
       p.text(neighbors[i].cell.name, xPos, yPos)
 
       p.textAlign(p.RIGHT)
-      p.text(neighbors[i].dist.toFixed(1), this.width - this.margin * 4, yPos)
+      p.text(neighbors[i].dist.toFixed(1) + " Km", this.width - this.margin * 4, yPos)
     }
   }
   resize(canvasWidth: number, canvasHeight: number) {
