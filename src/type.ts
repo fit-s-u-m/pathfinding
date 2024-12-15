@@ -12,7 +12,7 @@ export type ALGORITHMS =
   | "Greedy Best first algorithm"
   | "Bellman-Ford Algorithm"
   | "Floyd-Warshall Algorithm";
-export type COLOR = [number, number, number, number] | string;
+export type COLOR = [number, number, number, number];
 export type HIGHLIGHT = { text: string; color: COLOR };
 export type State = {
   start: Cell;

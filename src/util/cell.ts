@@ -1,5 +1,5 @@
 import p5 from "p5"
-import { CellType, COLOR } from "../type"
+import { CellType } from "../type"
 import { Arrow } from "../visualization/arrow"
 import { Action } from "./action"
 

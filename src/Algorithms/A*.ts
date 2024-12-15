@@ -46,7 +46,6 @@ export class Astar implements PathFindingAlgorithm {
         const runningWeight = currentWeight + (this.gScore.get(graph.toNumber(current)) || 0)
         const prevWeight = this.gScore.get(graph.toNumber(cell))
 
-        let color: COLOR
         let weight: number
 
         if (!prevWeight || prevWeight > runningWeight) { // if there is prev weight and it is greater than the current
