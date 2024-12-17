@@ -16,8 +16,13 @@ export class Ui {
   visualMobile: p5.Element | null = null
 
   // history control
-  prev: p5.Element | null = null
-  next: p5.Element | null = null
+  prev: p5.Element[] | null = null
+  next: p5.Element[] | null = null
+
+  // dropdown
+  dropDown: p5.Element | null = null
+  dropDownContent: p5.Element | null = null
+  dropDownOpen: boolean = false
 
   constructor(p: p5) {
 
@@ -31,8 +36,11 @@ export class Ui {
     const visualMobile = p.select("#visual-mobile")
 
     const clearboard = p.selectAll(".clear-board")
-    const prev = p.select("#prev")
-    const next = p.select("#next")
+    const prev = p.selectAll(".prev")
+    const next = p.selectAll(".next")
+
+    const dropDown = p.select(".dropdown-btn")
+    const dropDownContent = p.select(".dropdown-content")
 
 
     if (!algorithm || !visual) return;
@@ -52,6 +60,9 @@ export class Ui {
     this.prev = prev
     this.next = next
 
+    this.dropDown = dropDown
+    this.dropDownContent = dropDownContent
+
     const selectedAlgorithm = algorithm.elt.value
     this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS
 
@@ -59,14 +70,33 @@ export class Ui {
   }
   handleHistory(update: Function) {
     if (!this.prev || !this.next) return
-    this.prev.mouseClicked(() => {
-      update("prev")
+    this.prev.map((button) => {
+      button.mouseClicked(() => {
+        update("prev")
+      })
     })
-    this.next.mouseClicked(() => {
-      update("next")
+    this.next.map((button) => {
+      button.mouseClicked(() => {
+        update("next")
+      })
     })
   }
+  handleDropDown() {
+    if (!this.dropDown || !this.dropDownContent) return;
 
+    this.dropDown.elt.addEventListener("click", () => {
+      if (!this.dropDownContent) return;
+
+      // Toggle the visibility of the dropdown content
+      this.toggleDropDown()
+    });
+  }
+  toggleDropDown() {
+    if (!this.dropDownContent) return;
+    this.dropDownContent.elt.classList.toggle("hidden");
+    this.dropDownOpen = !this.dropDownOpen;
+    console.log(this.dropDownOpen)
+  }
   updateVisual(update: Function) {
     if (!this.visual || !this.visualMobile) return
     this.visual.elt.addEventListener("change", () => {
@@ -140,3 +170,10 @@ export class Ui {
   }
 
 }
+export const dropDown = () => ({
+  open: false,
+  toggle() {
+    this.open = !this.open
+  }
+})
+

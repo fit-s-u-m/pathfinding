@@ -21,7 +21,7 @@ html,body {
 
 .select{
   @apply bg-background-color-500 text-primary-color-700
-  font-bold select-md select-ghost w-full rounded-lg ;
+  font-bold select-md w-full rounded-lg select-bordered border-primary-color-900 ;
 }
 .select:hover, .select:focus {
   @apply bg-blue-100 bg-primary-color-800 text-background-color-50 outline-none ring-0;
@@ -38,6 +38,12 @@ html,body {
     @apply inline-flex items-center justify-center h-10 gap-2 px-6
             text-sm font-medium tracking-wide transition duration-300 
             justify-self-center whitespace-nowrap
+}
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .button-solid {
+        @apply px-2; /* Reduce padding for smaller screens */
+    }
 }
 .button-solid:hover,.button-solid:focus{
   @apply bg-primary-color-900 text-background-color-50 font-bold;

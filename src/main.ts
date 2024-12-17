@@ -7,8 +7,9 @@ import { History } from "./util/history";
 import { Country } from "./visualization/map";
 import { Graph } from "./dataStructures/Graph";
 
-import Alpine from 'alpinejs'
 import { ComposedAction } from "./util/action";
+
+import Alpine from 'alpinejs'
 window.Alpine = Alpine
 Alpine.start()
 
@@ -40,6 +41,7 @@ const drawing = (p: p5) => {
     ui.updateAlgorithm(updateAlgorithm)
     ui.handleHistory(handleHistory)
     ui.updateVisual(updateVisual)
+    ui.handleDropDown()
     console.log(ui.selectedVisual)
 
     if (ui.selectedVisual === "Grid")
@@ -74,6 +76,7 @@ const drawing = (p: p5) => {
   // for pc users
   p.mouseDragged = () => {
     const selected = ui.selectedFlag;
+    if (ui.dropDownOpen) return
     if (selected == "obstacle" && composedAction) {
       const action = graph.addObstacle(p.mouseX, p.mouseY);
       if (action)
@@ -87,12 +90,14 @@ const drawing = (p: p5) => {
     composedAction = null // reset
   }
   p.mousePressed = () => {
+    if (ui.dropDownOpen) return
     plantFlag()
   }
 
   // for mobile
   p.touchMoved = () => {
     const selected = ui.selectedFlag;
+    if (ui.dropDownOpen) return
     if (selected == "obstacle" && composedAction) {
       const action = graph.addObstacle(p.mouseX, p.mouseY);
       if (action)
@@ -106,6 +111,7 @@ const drawing = (p: p5) => {
     composedAction = null // reset
   }
   p.touchStarted = () => {
+    if (ui.dropDownOpen) return
     plantFlag()
   }
 

@@ -11,16 +11,18 @@
 <body>
   <div class="navbar glass p-0" x-data="{selected:'start'}">
     <div class=" navbar-start">
-      <div class="dropdown" x-data="{isOpened:false}">
-        <div tabindex="0" role="button" @click="isOpened = !isOpened"
-          class="btn btn-ghost btn-sm ml-3 lg:hidden  bg-secondary-color hover:bg-accent-color">
+      <details class="dropdown">
+        <summary tabindex="0" role="button" 
+          class="dropdown-btn btn btn-ghost btn-sm ml-3 lg:hidden  bg-secondary-color hover:bg-accent-color">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
-        </div>
-        <ul tabindex="0" x-show="isOpened" @click.outside="isOpened=false"
-          class="menu menu-sm dropdown-content bg-background-color-500 rounded-box z-[1] mt-3 h-[65vh] w-[60vw] p-10 shadow">
-          <li class="flex flex-row gap-5 items-center md:hidden lg:flex">
+        </summary>
+        <ul tabindex="0" 
+          class="menu menu-sm hidden dropdown-content bg-background-color-500 rounded-box z-[1] mt-3 h-[65vh] w-[60vw] p-10 shadow gap-5">
+
+            
+          <li class="flex flex-column sm:flex-row  gap-0 sm:gap-5 place-content-start  md:hidden lg:flex">
             <button data-value="start" @click="selected='start'"
               :class="selected =='start'?'button-selected':'button-not-selected'  "
               class="selectable-button button-solid">
@@ -36,20 +38,9 @@
               class="selectable-button button-solid ">
               <span>End</span>
             </button>
-            <button
-              class="clear-board button-outline">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                class="stroke-primary-color-700" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-              Clear
-            </button>
           </li>
 
-          <li class="mt-5">
+          <li class="mt-2 md:mt-5">
             <label for="algorithms" class="block text-sm font-medium text-gray-900">Algorithms</label>
             <select name="algorithms" id="algorithms-mobile"
               class="select">
@@ -72,32 +63,48 @@
             </select>
 
           </li>
-          <li>
+          <li class="flex flex-column sm:flex-row gap-1 items-center mr-5 place-content-start  xl:hidden">
+            <button 
+              class="prev button-outline">
+              prev
+            </button>
+            <button 
+              class="next button-outline">
+              next
+            </button>
+            <button
+              class="clear-board button-outline">
+              clear
+            </button>
           </li>
         </ul>
-      </div>
+      </details>
       <div class="text-xl text-primary-color-900 font-bold">Nehemiah</div>
     </div>
-    <div class="navbar-center hidden md:flex lg:flex">
-      <ul class="menu menu-horizontal px-1 gap-5 disabled">
-        <li class="flex flex-row gap-5 items-center">
+    <div class="navbar-center ">
+      <ul class="menu menu-horizontal px-1 gap:1 lg:gap-5">
+        <li class="flex-row gap-1 lg:gap-5 items-center ">
+
           <button data-value="start" @click="selected='start'"
-            :class="selected =='start'?'button-selected':'button-not-selected'  "
+            :class="selected =='start'?'button-selected':'button-not-selected' "
             class="selectable-button button-solid">
             <span>Start</span>
           </button>
-          <button data-value="obstacle" @click="selected='obstacle'"
-            :class="selected =='obstacle'?'button-selected':'button-not-selected'  "
-            class="selectable-button button-solid">
-            <span>Obstacle</span>
-          </button>
+          <div class="hidden md:flex">
+            <button data-value="obstacle" @click="selected='obstacle'"
+              :class="selected =='obstacle'?'button-selected':'button-not-selected' "
+              class="selectable-button button-solid">
+              <span>Obstacle</span>
+            </button>
+          </div>
           <button data-value="end" @click="selected='end'"
             :class="selected =='end'?'button-selected':'button-not-selected'  "
             class="selectable-button button-solid ">
             <span>End</span>
           </button>
-        </li>
-        <li class="justify-center md:hidden lg:flex">
+
+          </li>
+        <li class="justify-center hidden lg:flex">
 
           <select name="Algorithm" id="algorithms"
             class="select">
@@ -109,7 +116,7 @@
           </select>
 
         </li>
-        <li class="justify-center md:hidden lg:flex">
+        <li class="justify-center hidden lg:flex">
 
           <select name="visual" id="visual"
             class=" select">
@@ -119,11 +126,11 @@
           </select>
 
         </li>
-        <li class="md:hidden lg:flex justify-center p-5 ">
+        <li class="hidden lg:flex justify-center p-5 ">
           <button
             class="button-outline clear-board">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-              class="stroke-primary-color-700" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              class="stroke-primary-color-700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               <line x1="10" y1="11" x2="10" y2="17"></line>
@@ -134,22 +141,22 @@
         </li>
       </ul>
     </div>
-    <div class="navbar-end ml-5">
+    <div class="navbar-end ml-1 md:ml-2 lg:ml-5">
       <ul class="flex flex-row gap-3">
-        <li class="flex flex-row items-center ">
+        <li class="flex flex-row items-center m-2 ">
           <button
             class="button-outline play">
             run
           </button>
         </li>
 
-        <li class="flex flex-row gap-1 items-center mr-5">
-          <button id="prev"
-            class="button-outline">
+        <li class=" hidden flex-row gap-1 items-center mr-5  xl:flex">
+          <button 
+            class=" prev button-outline">
             prev
           </button>
-          <button id="next"
-            class="button-outline">
+          <button 
+            class="next button-outline">
             next
           </button>
         </li>
