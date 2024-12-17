@@ -2,6 +2,9 @@
 
 This project implements various pathfinding algorithms to find the shortest
 path between two points on a grid.
+
+Here is the link to the website [Pathfinding](https://fit-s-u-m.github.io/pathfinding/)
+
 It includes algorithms such as
 **A (A-star)**, **Dijkstra**, **Breadth-First Search (BFS)**
 and **Greedy Best-First Search**,
