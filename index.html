@@ -13,7 +13,7 @@
     <div class=" navbar-start">
       <details class="dropdown">
         <summary tabindex="0" role="button" 
-          class="dropdown-btn btn btn-ghost btn-sm ml-3 lg:hidden  bg-secondary-color hover:bg-accent-color">
+          class="dropdown-btn btn btn-ghost btn-sm ml-3 xl:hidden  bg-secondary-color hover:bg-accent-color">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
@@ -22,7 +22,7 @@
           class="menu menu-sm hidden dropdown-content bg-background-color-400 rounded-box z-[1] mt-3  p-10 shadow gap-5">
 
             
-          <li class="flex flex-column sm:flex-row  gap-2 sm:gap-5 place-content-start  md:hidden lg:flex">
+          <li class="flex flex-column sm:flex-row  gap-2 sm:gap-5 place-content-start  md:hidden">
             <button data-value="start" @click="selected='start'"
               :class="selected =='start'?'button-selected':'button-not-selected'  "
               class="selectable-button button-solid">
@@ -108,7 +108,7 @@
           </button>
 
           </li>
-        <li class="justify-center hidden lg:flex">
+        <li class="justify-center hidden xl:flex">
 
           <select name="Algorithm" id="algorithms"
             class="select">
@@ -120,7 +120,7 @@
           </select>
 
         </li>
-        <li class="justify-center hidden lg:flex">
+        <li class="justify-center hidden xl:flex">
 
           <select name="visual" id="visual"
             class=" select">
