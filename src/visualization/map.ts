@@ -24,6 +24,8 @@ export class Country implements Graph {
 
   cities: City[] = []
   countryDatas: [number, number][] = []
+  maxDistance: number
+  maxVerticalDistance: number
 
   constructor(geoJsonCities: any, geoJsonCountry: any, canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth
@@ -37,13 +39,21 @@ export class Country implements Graph {
     for (let cityData of cityDatas) {
       const name = cityData.properties.name
       const location = cityData.geometry.coordinates
-      this.cities.push(new City({ name, location }, this.project.bind(this)))
+      const cellSize = Math.min(canvasWidth, canvasHeight) / 30
+      this.cities.push(new City({ name, location }, this.project.bind(this), cellSize))
     }
 
     // define the description bounds
-    const mostLeft = Math.max(...this.countryDatas.map(coord => coord[0]))
-    const mostBottom = Math.min(...this.countryDatas.map(coord => coord[1]))
-    this.description = new Description(mostLeft, mostBottom, canvasWidth, canvasHeight, this.project.bind(this))
+    const right = Math.max(...this.countryDatas.map(coord => coord[0]))
+    const bottom = Math.min(...this.countryDatas.map(coord => coord[1]))
+
+    // calcluate the max distance
+    const top = Math.max(...this.countryDatas.map(coord => coord[1]))
+    this.maxVerticalDistance = top - bottom
+    const projectDist = this.project({ x: 0, y: this.maxVerticalDistance })
+    this.maxDistance = projectDist.y
+
+    this.description = new Description(right, bottom, canvasWidth, canvasHeight, this.project.bind(this))
   }
   setStart(x: number, y: number): void {
     const cell = this.getCell(x, y)
@@ -143,8 +153,9 @@ export class Country implements Graph {
     return this.getActualDistance(cell1, cell2)
   }
   getNormalWeight(cell1: Cell, cell2: Cell): number {
-    const minScren = Math.min(this.canvasWidth, this.canvasHeight)
-    return Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2) / minScren
+    const dist = Math.sqrt((cell1.location.x - cell2.location.x) ** 2 + (cell1.location.y - cell2.location.y) ** 2)
+    console.log(dist / this.maxDistance)
+    return 1 - (dist / this.maxDistance)
   }
   getActualDistance(city1: City, city2: City): number {
     return this.haversineDistance(
@@ -158,8 +169,11 @@ export class Country implements Graph {
       for (let otherCity of this.cities) {
         if (city !== otherCity) {
           const weight = this.getNormalWeight(city, otherCity)
-          const random = Math.random()
-          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random < 0.5 && weight < 0.18) {
+          const random = Math.random() < 0.5
+          const smallScreen = 700
+          const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
+          let minReqWeight = minScreen < smallScreen ? 0.8 : 0.5
+          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random && weight > minReqWeight) {
             city.makeConnection(otherCity, weight)
           }
         }
@@ -216,9 +230,12 @@ export class Country implements Graph {
       for (let neighbors of city.neighbors) {
         const neighboringCity = neighbors.cell as City
         neighboringCity.foucus(p)
-        neighboringCity.showText(neighbors.cell.name, size, p)
       }
       city.highlightArrow(p)
+      for (let neighbors of city.neighbors) {
+        const neighboringCity = neighbors.cell as City
+        neighboringCity.showText(neighbors.cell.name, size, p)
+      }
       city.showDistance(p, this.getActualDistance.bind(this), size)
       city.showText(city.name, size * 2.5, p)
       this.description.show(p, city, city.neighbors.map(neighbor => ({ cell: neighbor.cell, dist: (this.getDistance(city, neighbor.cell as City)) })))
@@ -288,8 +305,10 @@ export class Country implements Graph {
     const min = Math.min(width, height)
     for (let city of this.cities) {
       city.cellSize = min / 30
-      city.resize()
+      city.resize(width, height)
     }
     this.description.resize(width, height)
+    const projectDist = this.project({ x: 0, y: this.maxVerticalDistance })
+    this.maxDistance = projectDist.y
   }
 }

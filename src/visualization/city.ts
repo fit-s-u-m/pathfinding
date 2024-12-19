@@ -12,7 +12,7 @@ export class City implements Cell {
   location: { x: number, y: number }
   project: Function
 
-  cellSize = 30
+  cellSize: number
   color
   neighbors: { cell: Cell, weight: number, arrow: Arrow }[] = []
   type: CellType = "normal"
@@ -20,12 +20,13 @@ export class City implements Cell {
   textSize: number = 20
   addGlow: boolean = false
 
-  constructor(data: CityData, project: Function) {
+  constructor(data: CityData, project: Function, cellSize: number) {
     this.name = data.name
     this.coordLocation = { x: data.location[0], y: data.location[1] }
     this.location = project(this.coordLocation)
     this.project = project
     this.color = colors.background as COLOR
+    this.cellSize = cellSize
   }
   makeConnection(city: City, weight: number): void {
     const arrow = new Arrow(this, city, weight)
@@ -60,8 +61,9 @@ export class City implements Cell {
   getType() {
     return this.type
   }
-  highlight(percent:number): Action {
-    const color = lerpColor(colors.primary as COLOR,colors.background as COLOR,percent)
+  highlight(percent: number): Action {
+    console.log(percent)
+    const color = lerpColor(colors.primary as COLOR, colors.background as COLOR, percent)
     const beHighlight = (color: COLOR) => {
       this.color = color
       this.type = "highlight"
@@ -123,15 +125,15 @@ export class City implements Cell {
 
     p.fill(colors.text as COLOR)
     p.stroke(colors.black)
-    if(this.type =="path"){
+    if (this.type == "path") {
       p.fill(colors.path as COLOR)
       p.stroke(colors.path)
     }
-    if(this.type =="start"){
+    if (this.type == "start") {
       p.fill(colors.start as COLOR)
       p.stroke(colors.start)
     }
-    if(this.type =="end"){
+    if (this.type == "end") {
       p.fill(colors.end as COLOR)
       p.stroke(colors.end)
     }
@@ -142,7 +144,11 @@ export class City implements Cell {
     p.pop()
   }
 
-  resize() {
+  resize(width: number, height: number) {
     this.location = this.project(this.coordLocation)
+    this.cellSize = Math.min(width, height) / 30
+    for (let neighbor of this.neighbors) {
+      neighbor.arrow.resize(width, height)
+    }
   }
 }
