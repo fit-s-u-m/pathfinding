@@ -169,7 +169,7 @@ export class Country implements Graph {
       for (let otherCity of this.cities) {
         if (city !== otherCity) {
           const weight = this.getNormalWeight(city, otherCity)
-          const random = Math.random() < 0.5
+          const random = Math.random() < 0.8
           const smallScreen = 700
           const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
           let minReqWeight = minScreen < smallScreen ? 0.8 : 0.5
