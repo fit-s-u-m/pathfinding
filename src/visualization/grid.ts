@@ -25,26 +25,26 @@ export class Grid implements Graph {
   highlightedArrows: Arrow[] = []
 
   offsetX: number = 50;
-  offsetY: number =50;
+  offsetY: number = 50;
 
   cells: Map<number, GridCell> = new Map()
   constructor(canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
 
-    this.cellSize = 25 // TODO: calculate acccording to window size
+    this.cellSize = 50 // TODO: calculate acccording to window size
 
-    this.numRow = Math.floor( (this.canvasHeight - 2*this.offsetX) / this.cellSize)
-    this.numCol = Math.floor( (this.canvasWidth  - 2*this.offsetY) / this.cellSize)
+    this.numRow = Math.floor((this.canvasHeight - 2 * this.offsetX) / this.cellSize)
+    this.numCol = Math.floor((this.canvasWidth - 2 * this.offsetY) / this.cellSize)
 
-    CellPool.getInstance().makePool(this.numCol*this.numRow)
+    CellPool.getInstance().makePool(this.numCol * this.numRow)
 
     this.makeGrid()
   }
   makeGrid() {
     const cells = CellPool
-    .getInstance()
-    .getCells(this.numCol*this.numRow)
+      .getInstance()
+      .getCells(this.numCol * this.numRow)
 
     cells.forEach((cell, index) => {
       const row = Math.floor(index / this.numCol)
@@ -283,10 +283,10 @@ export class Grid implements Graph {
       return new Action(() => { }, () => { })
     }
   }
-  
+
   clearCells() {
     for (let cell of this.cells.values()) {
-        cell.clearData(); // Destroy graphical elements or other resources
+      cell.clearData(); // Destroy graphical elements or other resources
     }
 
     // Clear the map
@@ -301,15 +301,15 @@ export class Grid implements Graph {
 
 
   update() {
-    this.numRow = Math.floor( (this.canvasHeight - 2*this.offsetX) / this.cellSize)
-    this.numCol = Math.floor( (this.canvasWidth  - 2*this.offsetY) / this.cellSize)
-    
+    this.numRow = Math.floor((this.canvasHeight - 2 * this.offsetX) / this.cellSize)
+    this.numCol = Math.floor((this.canvasWidth - 2 * this.offsetY) / this.cellSize)
+
     // Clear old grid data
     this.clearCells();
 
     // add more to pool if needed
-    if(this.numCol*this.numRow > CellPool.getInstance().size()){
-      const numRemaingCell = this.numCol*this.numRow - CellPool.getInstance().size()
+    if (this.numCol * this.numRow > CellPool.getInstance().size()) {
+      const numRemaingCell = this.numCol * this.numRow - CellPool.getInstance().size()
       CellPool.getInstance().makePool(numRemaingCell)
     }
 

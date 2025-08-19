@@ -159,6 +159,7 @@ const drawing = (p: p5) => {
       graph = new Country(geoJsonCities, getJsoncountry, app.clientWidth, app.clientHeight)
     }
     graph.createNeighbors()
+    localStorage.setItem("selectedVisual", selectedVisual)
   }
 
   function updateAlgorithm(selectedAlgorithm: ALGORITHMS) {

@@ -3,7 +3,7 @@ import { ALGORITHMS, SELECT } from "./type";
 export class Ui {
   selectedFlag: SELECT = "start"
   selectedAlgorithm: ALGORITHMS = "Breadth-First Search";
-  selectedVisual: "Grid" | "Map" = "Grid"
+  selectedVisual: "Grid" | "Map" = "Map"
 
   algorithm: p5.Element | null = null;
   algorithmMobile: p5.Element | null = null;
@@ -27,7 +27,6 @@ export class Ui {
   constructor(p: p5) {
 
     const selectables = p.selectAll(".selectable-button")
-
     const runButtons = p.selectAll(".play")
 
     const algorithm = p.select("#algorithms");
@@ -66,7 +65,55 @@ export class Ui {
     const selectedAlgorithm = algorithm.elt.value
     this.selectedAlgorithm = selectedAlgorithm.toString() as ALGORITHMS
 
-    this.selectedVisual = this.visual.elt.value as "Grid" | "Map";
+    this.visual.elt.value = localStorage.getItem("selectedVisual") as "Grid" | "Map" || "Grid"
+
+
+    // keyboard events
+    window.addEventListener("keyup", (event) => {
+      switch (event.code) {
+        case "Space":
+          event.preventDefault()
+          this.runButton?.forEach(btn => (btn.elt as HTMLButtonElement).click())
+          break
+
+        case "ArrowLeft":
+          event.preventDefault()
+          this.prev?.forEach(btn => (btn.elt as HTMLButtonElement).click())
+          break
+
+        case "ArrowRight":
+          event.preventDefault()
+          this.next?.forEach(btn => (btn.elt as HTMLButtonElement).click())
+          break
+
+
+        default:
+          // Handle number keys separately (use event.key here)
+          switch (event.key) {
+            case "1":
+              this.selectedFlag = "start"
+              this.updateFlagsKey()
+              break
+            case "2":
+              this.selectedFlag = "obstacle"
+              this.updateFlagsKey()
+              break
+            case "3":
+              this.selectedFlag = "end"
+              this.updateFlagsKey()
+              break
+          }
+      }
+    })
+  }
+  updateFlagsKey() {
+    if (!this.flags) return
+    for (let buttons of this.flags) {
+      const flag = buttons.elt.dataset.value as SELECT
+      if (flag == this.selectedFlag) {
+        (buttons.elt as HTMLButtonElement).click()
+      }
+    }
   }
   handleHistory(update: Function) {
     if (!this.prev || !this.next) return
@@ -116,6 +163,28 @@ export class Ui {
         this.visual.elt.value = this.selectedVisual  // update the other when one change
       console.log(this.selectedVisual)
       update(this.selectedVisual);
+
+    })
+    window.addEventListener("keydown", (event) => {
+      console.log("event", event.code)
+      if (!this.visual) return
+      switch (event.code) {
+        case "ArrowUp":
+          event.preventDefault()
+          this.selectedVisual = "Grid"
+          this.visual.elt.value = this.selectedVisual
+          update(this.selectedVisual)
+          break
+
+        case "ArrowDown":
+          event.preventDefault()
+          this.selectedVisual = "Map"
+          this.visual.elt.value = this.selectedVisual
+          update(this.selectedVisual)
+          break
+        default:
+          break;
+      }
 
     })
   }

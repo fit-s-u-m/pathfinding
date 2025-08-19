@@ -172,7 +172,7 @@ export class Country implements Graph {
           const random = Math.random() < 0.8
           const smallScreen = 700
           const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
-          let minReqWeight = minScreen < smallScreen ? 0.8 : 0.5
+          let minReqWeight = minScreen < smallScreen ? 0.6 : 0.5
           if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random && weight > minReqWeight) {
             city.makeConnection(otherCity, weight)
           }
