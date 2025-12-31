@@ -63,7 +63,17 @@ export class GridCell implements Cell {
     this.setState("path", colors.path_grid as COLOR);
   }
   highlight(distance: number): Action {
-    const color = lerpColor(colors.primary as COLOR, colors.background as COLOR, distance)
+    // const color = lerpColor(colors.primary as COLOR, colors.background as COLOR, distance)
+    const keys = [50,100,200,300,400,500,600,700,800,900,950] as const;
+
+    // Clamp distance between 0 and 1
+    const clamped = Math.max(0, Math.min(1, distance));
+
+    // Compute an index into the keys array
+    const index = Math.floor(clamped * (keys.length - 1));
+
+    // Pick the corresponding color
+    const color:COLOR = colors.primary_color[keys[index]];
     const doHighlight = (color: COLOR) => this.setState("highlight", color);
     const undoHighlight = (prevType: CellType, prevColor: COLOR) => this.setState(prevType, prevColor);
     const action = new Action(doHighlight.bind(this, color), undoHighlight.bind(this, this.type, this.color))

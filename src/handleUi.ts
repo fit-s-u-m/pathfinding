@@ -86,7 +86,6 @@ export class Ui {
           this.next?.forEach(btn => (btn.elt as HTMLButtonElement).click())
           break
 
-
         default:
           // Handle number keys separately (use event.key here)
           switch (event.key) {
@@ -166,7 +165,7 @@ export class Ui {
 
     })
     window.addEventListener("keydown", (event) => {
-      console.log("event", event.code)
+      // console.log("event", event.code)
       if (!this.visual) return
       switch (event.code) {
         case "ArrowUp":
