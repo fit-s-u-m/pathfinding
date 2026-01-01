@@ -4,7 +4,7 @@ import { Cell } from "../util/cell"
 import { colors } from "../util/colors"
 import { Arrow } from "./arrow"
 import { Action } from "../util/action"
-import { lerpColor } from "../util/util"
+// import { lerpColor } from "../util/util"
 
 export class GridCell implements Cell {
   neighbors: { cell: GridCell, weight: number, arrow: Arrow }[] = []
@@ -72,8 +72,9 @@ export class GridCell implements Cell {
     // Compute an index into the keys array
     const index = Math.floor(clamped * (keys.length - 1));
 
+    const [r, g, b, a] = colors.primary_color[keys[index]];
     // Pick the corresponding color
-    const color:COLOR = colors.primary_color[keys[index]];
+    const color: COLOR = [r, g, b, a];
     const doHighlight = (color: COLOR) => this.setState("highlight", color);
     const undoHighlight = (prevType: CellType, prevColor: COLOR) => this.setState(prevType, prevColor);
     const action = new Action(doHighlight.bind(this, color), undoHighlight.bind(this, this.type, this.color))
