@@ -272,7 +272,7 @@ export class Country implements Graph {
     for (let coord of this.countryDatas) {
       const { x, y } = this.project({ x: coord[0], y: coord[1] })
       p.stroke("black")
-      p.fill(colors.primary_color[900])
+      p.fill(colors.primary_inverted)
       p.vertex(x, y)
     }
     p.endShape()

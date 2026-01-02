@@ -2,55 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body {
-	background-color: #A2999E;
-	margin: 0;
-	padding:0;
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	box-sizing: border-box;
+html, body {
+  /* Gruvbox bg0_soft */
+  background-color: #3c3836;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 #app {
-	margin: 0;
-	width: 100%;
-	flex: 1;
-	overflow:hidden;
-  }
-
-.select{
-  @apply bg-background-color-500 text-primary-color-700
-  font-bold select-md w-full rounded-lg select-bordered border-primary-color-900 ;
-}
-.select:hover, .select:focus {
-  @apply bg-blue-100 bg-primary-color-800 text-background-color-50 outline-none ring-0;
+  margin: 0;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
-.button-outline{
-  @apply btn btn-sm bg-background-color-500 text-primary-color-900 border-primary-color-900;
+/* =======================
+   Select
+======================= */
+.select {
+  @apply bg-background-color-800 text-primary-color-300
+         font-bold select-md w-full rounded-lg
+         select-bordered border-primary-color-700;
 }
-.button-outline:hover{
+
+.select:hover,
+.select:focus {
+  @apply bg-primary-color-800 text-background-color-50
+         outline-none ring-0;
+}
+
+/* =======================
+   Buttons
+======================= */
+.button-outline {
+  @apply btn btn-sm
+         bg-background-color-800
+         text-primary-color-300
+         border-primary-color-700;
+}
+
+.button-outline:hover {
   @apply bg-primary-color-900 text-background-color-50;
 }
 
-.button-solid{
-    @apply inline-flex items-center justify-center h-10 gap-2 px-6
-            text-sm font-medium tracking-wide transition duration-300 
-            justify-self-center whitespace-nowrap
+.button-solid {
+  @apply inline-flex items-center justify-center h-10 gap-2 px-6
+         text-sm font-medium tracking-wide transition duration-300
+         justify-self-center whitespace-nowrap
+         bg-background-color-800 text-primary-color-300
+         rounded-lg;
 }
-/* Responsive adjustments */
+
+/* Responsive */
 @media (max-width: 640px) {
-    .button-solid {
-        @apply px-2; /* Reduce padding for smaller screens */
-    }
+  .button-solid {
+    @apply px-2;
+  }
 }
-.button-solid:hover,.button-solid:focus{
+
+.button-solid:hover,
+.button-solid:focus {
   @apply bg-primary-color-900 text-background-color-50 font-bold;
 }
-.button-selected{
-    @apply bg-primary-color-900 text-background-color-50
+
+.button-selected {
+  @apply bg-primary-color-900 text-background-color-50;
 }
-.button-not-selected{
-    @apply bg-background-color-500 text-primary-color-900
+
+.button-not-selected {
+  @apply bg-background-color-800 text-primary-color-300;
 }
