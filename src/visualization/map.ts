@@ -164,22 +164,49 @@ export class Country implements Graph {
     )
   }
 
-  createNeighbors() {
-    for (let city of this.cities) {
-      for (let otherCity of this.cities) {
-        if (city !== otherCity) {
-          const weight = this.getNormalWeight(city, otherCity)
-          const random = Math.random() < 0.8
-          const smallScreen = 700
-          const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
-          let minReqWeight = minScreen < smallScreen ? 0.6 : 0.5
-          if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random && weight > minReqWeight) {
-            city.makeConnection(otherCity, weight)
-          }
+
+createNeighbors() {
+  const maxNeighbors = 3; // or 2 for small screens
+
+  for (let city of this.cities) {
+    let currentNeighbors = 0;
+    for (let otherCity of this.cities) {
+      if (city !== otherCity && currentNeighbors < maxNeighbors) {
+        const weight = this.getNormalWeight(city, otherCity)
+        const random = Math.random() < 0.8
+        const smallScreen = 700
+        const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
+        let minReqWeight = minScreen < smallScreen ? 0.6 : 0.5
+
+        if (
+          city.type !== "obstacle" &&
+          otherCity.type !== "obstacle" &&
+          random &&
+          weight > minReqWeight
+        ) {
+          city.makeConnection(otherCity, weight)
+          currentNeighbors++
         }
       }
     }
   }
+}
+  // createNeighbors() {
+  //   for (let city of this.cities) {
+  //     for (let otherCity of this.cities) {
+  //       if (city !== otherCity) {
+  //         const weight = this.getNormalWeight(city, otherCity)
+  //         const random = Math.random() < 0.8
+  //         const smallScreen = 700
+  //         const minScreen = Math.min(this.canvasHeight, this.canvasWidth)
+  //         let minReqWeight = minScreen < smallScreen ? 0.6 : 0.5
+  //         if (city.type !== "obstacle" && otherCity.type !== "obstacle" && random && weight > minReqWeight) {
+  //           city.makeConnection(otherCity, weight)
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   project(longLang: { x: number, y: number }) {
     // Define Ethiopia's approximate geographic bounds
